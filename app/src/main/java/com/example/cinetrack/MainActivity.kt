@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,8 +19,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +40,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,9 +53,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CineTrackApp(){
+fun CineTrackApp() {
     MaterialTheme {
         val navController = rememberNavController()
+        val movieListViewModel: MovieListViewModel = viewModel()
+        val uiState = movieListViewModel.uiState
 
         NavHost(
             navController = navController,
@@ -59,20 +65,21 @@ fun CineTrackApp(){
         ) {
             composable("movie_list") {
                 MovieListScreen(
-                    movies = sampleMovies,
+                    uiState = uiState,
                     onMovieClick = { movieId ->
                         navController.navigate("movie_detail/$movieId")
-                    }
+                    },
+                    onRetryClick = { movieListViewModel.loadPopularMovies() }
                 )
             }
 
             composable("movie_detail/{movieId}") { backStackEntry ->
                 val movieId = backStackEntry.arguments?.getString("movieId")?.toInt()
-                val movie = sampleMovies.find { it.id == movieId }
+                val movie = uiState.movies.find { it.id == movieId }
 
                 movie?.let {
                     MovieDetailScreen(
-                        it,
+                        movie = it,
                         onBackClick = { navController.popBackStack() }
                     )
                 }
@@ -84,39 +91,77 @@ fun CineTrackApp(){
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieListScreen(
-    movies: List<Movie>,
-    onMovieClick: (Int) -> Unit
-){
+    uiState: MovieListUiState,
+    onMovieClick: (Int) -> Unit,
+    onRetryClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {Text(text = "CineTrack")}
+                title = { Text(text = "CineTrack") }
             )
         }
     ) { innerPadding ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-
         ) {
-            items(movies) { movie ->
-                MovieCard(movie = movie, onclick = { onMovieClick(movie.id) })
+            when {
+                uiState.isLoading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                uiState.errorMessage != null -> {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "Bir hata oluştu.")
+                        Spacer(modifier = Modifier.padding(top = 4.dp))
+                        Text(text = uiState.errorMessage)
+                        Spacer(modifier = Modifier.padding(top = 8.dp))
+                        Button(onClick = onRetryClick) {
+                            Text(text = "Tekrar Dene")
+                        }
+                    }
+                }
+
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(uiState.movies) { movie ->
+                            MovieCard(
+                                movie = movie,
+                                onClick = { onMovieClick(movie.id) }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun MovieCard(movie: Movie , onclick: () -> Unit) {
+fun MovieCard(
+    movie: Movie,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable{ onclick()},
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(
             modifier = Modifier.padding(12.dp)
@@ -135,21 +180,20 @@ fun MovieCard(movie: Movie , onclick: () -> Unit) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .align(Alignment.CenterVertically)
             ) {
                 Text(
                     text = movie.title,
                     style = MaterialTheme.typography.titleMedium
                 )
 
-                Spacer( modifier = Modifier.padding(top = 4.dp))
+                Spacer(modifier = Modifier.padding(top = 4.dp))
 
                 Text(
                     text = "${movie.year}",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                Spacer( modifier = Modifier.padding(top = 4.dp))
+                Spacer(modifier = Modifier.padding(top = 4.dp))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -170,16 +214,19 @@ fun MovieCard(movie: Movie , onclick: () -> Unit) {
     }
 }
 
-//@Composable
-//fun MovieDetailScreenPreview(movie: Movie) {
-//    // Placeholder for the detail screen
-//    Text("Details for ${movie.title}")
-//}
-
 @Preview(showBackground = true)
 @Composable
 fun MovieListPreview() {
+    val fakeState = MovieListUiState(
+        isLoading = false,
+        movies = sampleMovies
+    )
+
     MaterialTheme {
-        MovieListScreen(movies = sampleMovies, onMovieClick = {})
+        MovieListScreen(
+            uiState = fakeState,
+            onMovieClick = {},
+            onRetryClick = {}
+        )
     }
 }

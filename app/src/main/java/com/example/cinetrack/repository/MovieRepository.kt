@@ -1,4 +1,4 @@
-package com.example.cinetrack.network.repository
+package com.example.cinetrack.repository
 
 import com.example.cinetrack.Movie
 import com.example.cinetrack.network.MovieApiClient
