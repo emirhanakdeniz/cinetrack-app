@@ -1,36 +1,56 @@
 package com.example.cinetrack
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieDetailScreen(movie: Movie) {
+fun MovieDetailScreen(movie: Movie, onBackClick: () -> Boolean) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(movie.title) }
+                title = { Text(movie.title) },
+                navigationIcon = {
+                    IconButton(onClick = { onBackClick()}) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Geri"
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
             AsyncImage(
@@ -39,21 +59,41 @@ fun MovieDetailScreen(movie: Movie) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(450.dp)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .clip(RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.padding(12.dp))
+            Spacer(modifier = Modifier.padding(16.dp))
 
             Text(
-                text = "Yıl: ${movie.year}",
-                style = MaterialTheme.typography.bodyLarge
+                text = movie.title,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.padding(4.dp))
+            Spacer(modifier = Modifier.padding(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${movie.year}",
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+
+            Spacer(modifier = Modifier.padding(16.dp))
+
+            Icon(
+                imageVector = Icons.Filled.Star,
+                contentDescription = "IMDb Rating",
+                modifier = Modifier.size(20.dp)
+            )
+
+            Spacer(modifier = Modifier.padding(start = 4.dp))
 
             Text(
-                text = "IMDb: ${movie.rating}",
+                text = "${movie.rating}",
                 style = MaterialTheme.typography.bodyLarge
             )
         }

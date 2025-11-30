@@ -16,14 +16,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -63,11 +67,14 @@ fun CineTrackApp(){
             }
 
             composable("movie_detail/{movieId}") { backStackEntry ->
-                val movieId = backStackEntry.arguments?.getString("movieId")?.toIntOrNull()
+                val movieId = backStackEntry.arguments?.getString("movieId")?.toInt()
                 val movie = sampleMovies.find { it.id == movieId }
 
                 movie?.let {
-                    MovieDetailScreen(it)
+                    MovieDetailScreen(
+                        it,
+                        onBackClick = { navController.popBackStack() }
+                    )
                 }
             }
         }
@@ -128,21 +135,36 @@ fun MovieCard(movie: Movie , onclick: () -> Unit) {
             Column(
                 modifier = Modifier
                     .weight(1f)
+                    .align(Alignment.CenterVertically)
             ) {
                 Text(
                     text = movie.title,
                     style = MaterialTheme.typography.titleMedium
                 )
+
                 Spacer( modifier = Modifier.padding(top = 4.dp))
+
                 Text(
                     text = "${movie.year}",
                     style = MaterialTheme.typography.bodyMedium
                 )
+
                 Spacer( modifier = Modifier.padding(top = 4.dp))
-                Text(
-                    text = "IMDb: ${movie.rating}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = "IMDb Rating",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.padding(start = 4.dp))
+                    Text(
+                        text = "${movie.rating}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }
