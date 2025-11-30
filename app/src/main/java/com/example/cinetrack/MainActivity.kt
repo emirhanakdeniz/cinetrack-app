@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +21,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -29,6 +29,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 
 class MainActivity : ComponentActivity() {
@@ -43,19 +46,40 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CineTrackApp(){
-    MaterialTheme{
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background
+    MaterialTheme {
+        val navController = rememberNavController()
+
+        NavHost(
+            navController = navController,
+            startDestination = "movie_list"
         ) {
-            MovieListScreen(movies = sampleMovies)
+            composable("movie_list") {
+                MovieListScreen(
+                    movies = sampleMovies,
+                    onMovieClick = { movieId ->
+                        navController.navigate("movie_detail/$movieId")
+                    }
+                )
+            }
+
+            composable("movie_detail/{movieId}") { backStackEntry ->
+                val movieId = backStackEntry.arguments?.getString("movieId")?.toIntOrNull()
+                val movie = sampleMovies.find { it.id == movieId }
+
+                movie?.let {
+                    MovieDetailScreen(it)
+                }
+            }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieListScreen(movies: List<Movie>){
+fun MovieListScreen(
+    movies: List<Movie>,
+    onMovieClick: (Int) -> Unit
+){
     Scaffold(
         topBar = {
             TopAppBar(
@@ -72,16 +96,18 @@ fun MovieListScreen(movies: List<Movie>){
 
         ) {
             items(movies) { movie ->
-                MovieCard(movie = movie)
+                MovieCard(movie = movie, onclick = { onMovieClick(movie.id) })
             }
         }
     }
 }
 
 @Composable
-fun MovieCard(movie: Movie) {
+fun MovieCard(movie: Movie , onclick: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable{ onclick()},
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -122,10 +148,16 @@ fun MovieCard(movie: Movie) {
     }
 }
 
+//@Composable
+//fun MovieDetailScreenPreview(movie: Movie) {
+//    // Placeholder for the detail screen
+//    Text("Details for ${movie.title}")
+//}
+
 @Preview(showBackground = true)
 @Composable
 fun MovieListPreview() {
     MaterialTheme {
-        MovieListScreen(movies = sampleMovies)
+        MovieListScreen(movies = sampleMovies, onMovieClick = {})
     }
 }
