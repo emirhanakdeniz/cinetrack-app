@@ -12,9 +12,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -56,13 +60,25 @@ fun CineTrackApp() {
                     onMovieClick = { movieId ->
                         navController.navigate("movie_detail/$movieId")
                     },
-                    onRetryClick = { movieListViewModel.loadPopularMovies() }
+                    onRetryClick = { movieListViewModel.loadPopularMovies() },
+                    onNavigateToFavorites = { navController.navigate("favorites") }
+                )
+            }
+
+            composable("favorites"){
+                FavoritesScreen(
+                    favoriteMovies = uiState.favoriteMovies,
+                    onMovieClick = { movieId ->
+                        navController.navigate("movie_detail/$movieId")
+                    },
+                    onBackClick = { navController.popBackStack() }
                 )
             }
 
             composable("movie_detail/{movieId}") { backStackEntry ->
                 val movieId = backStackEntry.arguments?.getString("movieId")?.toInt()
                 val movie = uiState.movies.find { it.id == movieId }
+                    ?: uiState.favoriteMovies.find { it.id == movieId }
 
                 movie?.let {
                     val isFavorite = uiState.favoriteIDs.contains(it.id)
@@ -84,12 +100,21 @@ fun CineTrackApp() {
 fun MovieListScreen(
     uiState: MovieListUiState,
     onMovieClick: (Int) -> Unit,
-    onRetryClick: () -> Unit
+    onRetryClick: () -> Unit,
+    onNavigateToFavorites: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "CineTrack") }
+                title = { Text(text = "CineTrack") },
+                actions = {
+                    IconButton(onClick = onNavigateToFavorites) {
+                        Icon(
+                            imageVector = Icons.Filled.Favorite,
+                            contentDescription = "Favoriler"
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -220,7 +245,8 @@ fun MovieListPreview() {
         MovieListScreen(
             uiState = fakeState,
             onMovieClick = {},
-            onRetryClick = {}
+            onRetryClick = {},
+            onNavigateToFavorites = {}
         )
     }
 }
