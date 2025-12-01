@@ -12,6 +12,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,7 +33,12 @@ import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MovieDetailScreen(movie: Movie, onBackClick: () -> Boolean) {
+fun MovieDetailScreen(
+    movie: Movie,
+    isFavorite: Boolean,
+    onBackClick: () -> Boolean,
+    onToggleFavorite: () -> Unit,
+    ) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -41,6 +48,14 @@ fun MovieDetailScreen(movie: Movie, onBackClick: () -> Boolean) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Geri"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { onToggleFavorite()}) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                            contentDescription = if (isFavorite) "Favorilerden kaldır" else "Favorilere ekle"
                         )
                     }
                 }

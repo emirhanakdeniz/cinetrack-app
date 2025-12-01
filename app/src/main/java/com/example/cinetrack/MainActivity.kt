@@ -65,9 +65,13 @@ fun CineTrackApp() {
                 val movie = uiState.movies.find { it.id == movieId }
 
                 movie?.let {
+                    val isFavorite = uiState.favoriteIDs.contains(it.id)
+
                     MovieDetailScreen(
                         movie = it,
-                        onBackClick = { navController.popBackStack() }
+                        isFavorite = isFavorite,
+                        onBackClick = { navController.popBackStack() },
+                        onToggleFavorite = { movieListViewModel.toggleFavorite(it) }
                     )
                 }
             }
