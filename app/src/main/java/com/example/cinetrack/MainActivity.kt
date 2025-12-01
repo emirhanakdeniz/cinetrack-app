@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,7 +26,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -62,7 +63,8 @@ fun CineTrackApp() {
                         navController.navigate("movie_detail/$movieId")
                     },
                     onRetryClick = { movieListViewModel.loadPopularMovies() },
-                    onNavigateToFavorites = { navController.navigate("favorites") }
+                    onNavigateToFavorites = { navController.navigate("favorites") },
+                    onNavigateToSearch = { navController.navigate("search") }
                 )
             }
 
@@ -76,10 +78,24 @@ fun CineTrackApp() {
                 )
             }
 
+            composable("search"){
+                val searchUiState = movieListViewModel.searchUiState
+                SearchScreen(
+                    uiState = searchUiState,
+                    onQueryChange = { movieListViewModel.updateSearchQuery(it) },
+                    onSearch = { movieListViewModel.performSearch() },
+                    onMovieClick = { movieId ->
+                        navController.navigate("movie_detail/$movieId")
+                    },
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
             composable("movie_detail/{movieId}") { backStackEntry ->
                 val movieId = backStackEntry.arguments?.getString("movieId")?.toInt()
                 val movie = uiState.movies.find { it.id == movieId }
                     ?: uiState.favoriteMovies.find { it.id == movieId }
+                    ?: movieListViewModel.searchUiState.results.find { it.id == movieId }
 
                 movie?.let {
                     val isFavorite = uiState.favoriteIDs.contains(it.id)
@@ -101,13 +117,20 @@ fun MovieListScreen(
     uiState: MovieListUiState,
     onMovieClick: (Int) -> Unit,
     onRetryClick: () -> Unit,
-    onNavigateToFavorites: () -> Unit
+    onNavigateToFavorites: () -> Unit,
+    onNavigateToSearch: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "CineTrack") },
                 actions = {
+                    IconButton(onClick = onNavigateToSearch) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Ara"
+                        )
+                    }
                     IconButton(onClick = onNavigateToFavorites) {
                         Icon(
                             imageVector = Icons.Filled.Favorite,
@@ -233,18 +256,18 @@ fun MovieListScreen(
 //    }
 //}
 
-@Preview(showBackground = true)
-@Composable
-fun MovieListPreview() {
-    val fakeState = MovieListUiState(
-        isLoading = false,
-        movies = sampleMovies
-    )
-    
-        MovieListScreen(
-            uiState = fakeState,
-            onMovieClick = {},
-            onRetryClick = {},
-            onNavigateToFavorites = {}
-        )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun MovieListPreview() {
+//    val fakeState = MovieListUiState(
+//        isLoading = false,
+//        movies = sampleMovies
+//    )
+//
+//        MovieListScreen(
+//            uiState = fakeState,
+//            onMovieClick = {},
+//            onRetryClick = {},
+//            onNavigateToFavorites = {}
+//        )
+//}

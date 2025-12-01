@@ -23,6 +23,9 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
     var uiState by mutableStateOf(MovieListUiState())
         private set
 
+    var searchUiState by mutableStateOf(SearchUiState())
+        private set
+
     init {
         loadPopularMovies()
         loadFavorites()
@@ -67,6 +70,43 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
                 favoriteDao.insertFavorite(movie.toFavoriteEntity())
             }
             loadFavorites()
+        }
+    }
+
+    fun updateSearchQuery(newQuery: String) {
+        searchUiState = searchUiState.copy(query = newQuery)
+    }
+
+    fun performSearch() {
+        val query = searchUiState.query.trim()
+        if (query.isBlank()) {
+            searchUiState = searchUiState.copy(
+                isLoading = false,
+                results = emptyList(),
+                errorMessage = null
+            )
+            return
+        }
+
+        searchUiState = searchUiState.copy(
+            isLoading = true,
+            errorMessage = null
+        )
+
+        viewModelScope.launch {
+            try {
+                val movies = repository.searchMovies(query)
+                searchUiState = searchUiState.copy(
+                    isLoading = false,
+                    results = movies,
+                    errorMessage = null
+                )
+            } catch (e: Exception) {
+                searchUiState = searchUiState.copy(
+                    isLoading = false,
+                    errorMessage = e.localizedMessage ?: "Bir hata oluştu."
+                )
+            }
         }
     }
 }
