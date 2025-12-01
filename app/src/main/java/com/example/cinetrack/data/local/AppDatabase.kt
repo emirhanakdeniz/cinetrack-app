@@ -4,15 +4,16 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 @Database(
-    entities = [FavoriteMovieEntity::class],
-    version = 1,
+    entities = [TrackedMovieEntity::class],
+    version = 2,
     exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun favoriteMovieDao(): FavoriteMovieDao
+    abstract fun trackedMovieDao(): TrackedMovieDao
 
     companion object {
         @Volatile
@@ -24,7 +25,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "cinetrack_db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration() // şema değiştiğinde DB’yi sıfırlar
+                    .build()
                 INSTANCE = instance
                 instance
             }

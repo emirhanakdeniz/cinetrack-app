@@ -7,8 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinetrack.data.local.AppDatabase
-import com.example.cinetrack.data.local.toFavoriteEntity
+import com.example.cinetrack.data.local.TrackedMovieDao
 import com.example.cinetrack.data.local.toMovie
+import com.example.cinetrack.data.local.toTrackedEntity
 import com.example.cinetrack.repository.MovieRepository
 import kotlinx.coroutines.launch
 
@@ -17,8 +18,8 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val repository = MovieRepository(apiKey = BuildConfig.TMDB_API_KEY)
 
-    private val favoriteDao =
-        AppDatabase.getInstance(getApplication()).favoriteMovieDao()
+    private val trackedMovieDao: TrackedMovieDao =
+        AppDatabase.getInstance(getApplication()).trackedMovieDao()
 
     var uiState by mutableStateOf(MovieListUiState())
         private set
@@ -28,7 +29,7 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
 
     init {
         loadPopularMovies()
-        loadFavorites()
+        loadTrackedMovies()
     }
 
     fun loadPopularMovies(){
@@ -51,25 +52,31 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    private fun loadFavorites() {
+    private fun loadTrackedMovies() {
         viewModelScope.launch {
-            val favorites = favoriteDao.getAllFavorites()
+            val favorites = trackedMovieDao.getFavorites()
+            val watchlist = trackedMovieDao.getByStatus(MovieStatus.WATCHLIST)
+            val watched = trackedMovieDao.getByStatus(MovieStatus.WATCHED)
+
             uiState = uiState.copy(
                 favoriteIDs = favorites.map { it.id }.toSet(),
-                favoriteMovies = favorites.map { it.toMovie() }
+                favoriteMovies = favorites.map { it.toMovie() },
+                watchlistMovies = watchlist.map { it.toMovie() },
+                watchedMovies = watched.map { it.toMovie()}
             )
         }
     }
 
     fun toggleFavorite(movie: Movie) {
         viewModelScope.launch {
-            val currentlyFavorite = favoriteDao.isFavorite(movie.id)
-            if (currentlyFavorite) {
-                favoriteDao.deleteFavorite(movie.toFavoriteEntity())
-            } else {
-                favoriteDao.insertFavorite(movie.toFavoriteEntity())
-            }
-            loadFavorites()
+            val existing = trackedMovieDao.getById(movie.id)
+            val currentlyFavorite = existing?.isFavorite == true
+
+            val updated = (existing ?: movie.toTrackedEntity())
+                .copy(isFavorite = !currentlyFavorite)
+
+            trackedMovieDao.upsert(updated)
+            loadTrackedMovies()
         }
     }
 
@@ -108,5 +115,20 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
                 )
             }
         }
+    }
+
+    fun setMovieStatus(movie: Movie, status: MovieStatus) {
+        viewModelScope.launch {
+            val existing = trackedMovieDao.getById(movie.id)
+            val updated = (existing ?: movie.toTrackedEntity())
+                .copy(status = status)
+
+            trackedMovieDao.upsert(updated)
+            loadTrackedMovies()
+        }
+    }
+
+    fun clearMovieStatus(movie: Movie) {
+        setMovieStatus(movie, MovieStatus.NONE)
     }
 }

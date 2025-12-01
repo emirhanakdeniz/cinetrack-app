@@ -5,5 +5,7 @@ data class MovieListUiState(
     val movies: List<Movie> = emptyList(),
     val errorMessage: String? = null,
     val favoriteIDs: Set<Int> = emptySet(),
-    val favoriteMovies: List<Movie> = emptyList()
+    val favoriteMovies: List<Movie> = emptyList(),
+    val watchlistMovies: List<Movie> = emptyList(),
+    val watchedMovies: List<Movie> = emptyList()
 )
