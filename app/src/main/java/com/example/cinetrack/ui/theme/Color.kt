@@ -2,10 +2,15 @@ package com.example.cinetrack.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val CinePrimary = Color(0xFF7B61FF)      // Mor ton
+val CinePrimaryDark = Color(0xFF5A42D1)
+val CineSecondary = Color(0xFFFF4B91)    // Pembemsi vurgu
+val CineBackgroundDark = Color(0xFF0B1020)
+val CineSurfaceDark = Color(0xFF151A2C)
+val CineOnBackgroundDark = Color(0xFFE5E7F0)
+val CineOnSurfaceDark = Color(0xFFF5F5FF)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val CineBackgroundLight = Color(0xFFF5F5FF)
+val CineSurfaceLight = Color(0xFFFFFFFF)
+val CineOnBackgroundLight = Color(0xFF141414)
+val CineOnSurfaceLight = Color(0xFF202020)

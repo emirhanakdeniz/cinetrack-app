@@ -19,7 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -32,20 +31,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.cinetrack.ui.theme.CineTrackTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CineTrackApp()
+            CineTrackTheme{
+                CineTrackApp()
+            }
         }
     }
 }
 
 @Composable
 fun CineTrackApp() {
-    MaterialTheme {
         val navController = rememberNavController()
         val movieListViewModel: MovieListViewModel = viewModel()
         val uiState = movieListViewModel.uiState
@@ -92,7 +93,6 @@ fun CineTrackApp() {
                 }
             }
         }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -240,13 +240,11 @@ fun MovieListPreview() {
         isLoading = false,
         movies = sampleMovies
     )
-
-    MaterialTheme {
+    
         MovieListScreen(
             uiState = fakeState,
             onMovieClick = {},
             onRetryClick = {},
             onNavigateToFavorites = {}
         )
-    }
 }
