@@ -14,10 +14,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -38,11 +36,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -156,68 +154,68 @@ fun MovieListScreen(
     }
 }
 
-@Composable
-fun MovieCard(
-    movie: Movie,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp)
-        ) {
-            AsyncImage(
-                model = movie.posterUrl,
-                contentDescription = movie.title,
-                modifier = Modifier
-                    .size(width = 90.dp, height = 130.dp)
-                    .clip(RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Crop
-            )
-
-            Spacer(modifier = Modifier.padding(start = 12.dp))
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                Text(
-                    text = movie.title,
-                    style = MaterialTheme.typography.titleMedium
-                )
-
-                Spacer(modifier = Modifier.padding(top = 4.dp))
-
-                Text(
-                    text = "${movie.year}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-
-                Spacer(modifier = Modifier.padding(top = 4.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Star,
-                        contentDescription = "IMDb Rating",
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.padding(start = 4.dp))
-                    Text(
-                        text = "${movie.rating}",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        }
-    }
-}
+//@Composable
+//fun MovieCard(
+//    movie: Movie,
+//    onClick: () -> Unit
+//) {
+//    Card(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable { onClick() },
+//        shape = RoundedCornerShape(12.dp),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+//    ) {
+//        Row(
+//            modifier = Modifier.padding(12.dp)
+//        ) {
+//            AsyncImage(
+//                model = movie.posterUrl,
+//                contentDescription = movie.title,
+//                modifier = Modifier
+//                    .size(width = 90.dp, height = 130.dp)
+//                    .clip(RoundedCornerShape(10.dp)),
+//                contentScale = ContentScale.Crop
+//            )
+//
+//            Spacer(modifier = Modifier.padding(start = 12.dp))
+//
+//            Column(
+//                modifier = Modifier
+//                    .weight(1f)
+//            ) {
+//                Text(
+//                    text = movie.title,
+//                    style = MaterialTheme.typography.titleMedium
+//                )
+//
+//                Spacer(modifier = Modifier.padding(top = 4.dp))
+//
+//                Text(
+//                    text = "${movie.year}",
+//                    style = MaterialTheme.typography.bodyMedium
+//                )
+//
+//                Spacer(modifier = Modifier.padding(top = 4.dp))
+//
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Filled.Star,
+//                        contentDescription = "IMDb Rating",
+//                        modifier = Modifier.size(18.dp)
+//                    )
+//                    Spacer(modifier = Modifier.padding(start = 4.dp))
+//                    Text(
+//                        text = "${movie.rating}",
+//                        style = MaterialTheme.typography.bodyMedium
+//                    )
+//                }
+//            }
+//        }
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable
