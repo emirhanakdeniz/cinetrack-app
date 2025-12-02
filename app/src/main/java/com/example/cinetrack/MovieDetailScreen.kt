@@ -16,6 +16,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
@@ -41,6 +43,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.cinetrack.ui.theme.CineGold
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,7 +89,8 @@ fun MovieDetailScreen(
                     ){
                         Icon(
                             imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (isFavorite) "Favoriden çıkar" else "Favorilere ekle"
+                            contentDescription = if (isFavorite) "Favoriden çıkar" else "Favorilere ekle",
+                            tint = if (isFavorite) CineGold else MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -189,6 +193,13 @@ fun MovieDetailScreen(
                         },
                     enabled = !isInWatchlist
                 ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = if (isInWatchlist) "İzlemek istiyorum ✓" else "İzlemek istiyorum"
                     )
@@ -203,6 +214,13 @@ fun MovieDetailScreen(
                     },
                     enabled = !isWatched
                 ) {
+                    Icon(
+                        imageVector = Icons.Filled.CheckCircle,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp),
+                        tint = CineGold
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = if (isWatched) "İzledim ✓" else "İzledim"
                     )

@@ -1,16 +1,18 @@
 package com.example.cinetrack
 
-//import androidx.compose.ui.tooling.preview.Preview
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
@@ -30,11 +32,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.cinetrack.ui.theme.CineGold
 import com.example.cinetrack.ui.theme.CineTrackTheme
 
 class MainActivity : ComponentActivity() {
@@ -160,30 +164,34 @@ fun MovieListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "CineTrack") },
+                title = { CineTrackAppBarTitle() },
                 actions = {
                     IconButton(onClick = onNavigateToSearch) {
                         Icon(
                             imageVector = Icons.Filled.Search,
-                            contentDescription = "Ara"
+                            contentDescription = "Ara",
                         )
                     }
                     IconButton(onClick = onNavigateToWatchlist) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
-                            contentDescription = "İzlemek istediklerim"
+                            contentDescription = "İzlemek istediklerim",
+                            tint = CineGold
                         )
                     }
                     IconButton(onClick = onNavigateToWatched) {
                         Icon(
                             imageVector = Icons.Filled.CheckCircle,
-                            contentDescription = "İzlediklerim"
+                            contentDescription = "İzlediklerim",
+                            tint = CineGold
                         )
                     }
                     IconButton(onClick = onNavigateToFavorites) {
                         Icon(
                             imageVector = Icons.Filled.Favorite,
-                            contentDescription = "Favoriler"
+                            contentDescription = "Favoriler",
+                            tint = CineGold
+
                         )
                     }
                 }
@@ -245,6 +253,20 @@ fun MovieListScreen(
         }
     }
 }
+
+@Composable
+fun CineTrackAppBarTitle() {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_cinetrack_logo),
+            contentDescription = "CineTrack logo",
+            modifier = Modifier.width(28.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = "CineTrack")
+    }
+}
+
 
 //@Composable
 //fun MovieCard(

@@ -14,3 +14,5 @@ val CineBackgroundLight = Color(0xFFF5F5FF)
 val CineSurfaceLight = Color(0xFFFFFFFF)
 val CineOnBackgroundLight = Color(0xFF141414)
 val CineOnSurfaceLight = Color(0xFF202020)
+
+val CineGold = Color(0xFFF2C94C)
