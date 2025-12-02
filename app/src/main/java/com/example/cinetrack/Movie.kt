@@ -5,7 +5,9 @@ data class Movie(
     val title: String,
     val rating: Double,
     val year: Int,
-    val posterUrl: String
+    val posterUrl: String,
+    val overview: String? = null,
+    val originalLanguage: String? = null
 )
 
 val sampleMovies = listOf(

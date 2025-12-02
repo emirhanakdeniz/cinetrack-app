@@ -24,6 +24,8 @@ fun MovieDto.toMovie(): Movie {
         title = displayTitle,
         rating = vote_average,
         year = year,
-        posterUrl = posterUrl
+        posterUrl = posterUrl,
+        overview = overview,
+        originalLanguage = original_language
     )
 }

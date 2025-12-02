@@ -130,6 +130,24 @@ fun MovieDetailScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            movie.overview?.takeIf { it.isNotBlank() }?.let { overview ->
+                Text(
+                    text = overview,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            movie.originalLanguage?.takeIf { it.isNotBlank()}?.let {lang ->
+                Text(
+                    text = "Orijinal dil: ${lang.uppercase()}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+//            Spacer(modifier = Modifier.height(16.dp))
+
             // DURUM BUTONLARI
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -159,7 +177,7 @@ fun MovieDetailScreen(
             if (status == MovieStatus.NONE) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Bu filmi izlemek istiyor musun, yoksa izledin mi? Aşağıdan işaretleyebilirsin.",
+                    text = "Bu film ile ne yapmak istediğine karar vermelisin.",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
