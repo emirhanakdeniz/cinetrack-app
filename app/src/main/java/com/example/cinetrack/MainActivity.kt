@@ -126,11 +126,19 @@ fun CineTrackApp() {
                 movie?.let {
                     val isFavorite = uiState.favoriteIDs.contains(it.id)
 
+                    val currentStatus = when {
+                        uiState.watchlistMovies.any{ m -> m.id == it.id } -> MovieStatus.WATCHLIST
+                        uiState.watchedMovies.any{ m -> m.id == it.id } -> MovieStatus.WATCHED
+                        else -> MovieStatus.NONE
+                    }
+
                     MovieDetailScreen(
                         movie = it,
                         isFavorite = isFavorite,
+                        status = currentStatus,
                         onBackClick = { navController.popBackStack() },
-                        onToggleFavorite = { movieListViewModel.toggleFavorite(it) }
+                        onToggleFavorite = { movieListViewModel.toggleFavorite(it) },
+                        onSetStatus = { status -> movieListViewModel.setMovieStatus(it, status) }
                     )
                 }
             }

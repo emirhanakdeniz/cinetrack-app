@@ -1,6 +1,7 @@
 package com.example.cinetrack
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,15 +43,17 @@ import coil.compose.AsyncImage
 fun MovieDetailScreen(
     movie: Movie,
     isFavorite: Boolean,
-    onBackClick: () -> Boolean,
+    status: MovieStatus,
+    onBackClick: () -> Unit,
     onToggleFavorite: () -> Unit,
-    ) {
+    onSetStatus: (MovieStatus) -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(movie.title) },
                 navigationIcon = {
-                    IconButton(onClick = { onBackClick()}) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Geri"
@@ -56,10 +61,10 @@ fun MovieDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { onToggleFavorite()}) {
+                    IconButton(onClick = onToggleFavorite) {
                         Icon(
                             imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (isFavorite) "Favorilerden kaldır" else "Favorilere ekle"
+                            contentDescription = if (isFavorite) "Favoriden çıkar" else "Favorilere ekle"
                         )
                     }
                 }
@@ -75,8 +80,7 @@ fun MovieDetailScreen(
                 .padding(16.dp)
         ) {
             Card(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
@@ -94,7 +98,7 @@ fun MovieDetailScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = movie.title,
@@ -102,31 +106,63 @@ fun MovieDetailScreen(
                 fontWeight = FontWeight.Bold
             )
 
-            Spacer(modifier = Modifier.padding(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "${movie.year}",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = "IMDb rating",
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "${movie.rating}",
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
 
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Icon(
-                imageVector = Icons.Filled.Star,
-                contentDescription = "IMDb Rating",
-                modifier = Modifier.size(20.dp)
-            )
+            // DURUM BUTONLARI
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val isInWatchlist = status == MovieStatus.WATCHLIST
+                val isWatched = status == MovieStatus.WATCHED
 
-            Spacer(modifier = Modifier.padding(start = 4.dp))
+                FilledTonalButton(
+                    onClick = { onSetStatus(MovieStatus.WATCHLIST) },
+                    enabled = !isInWatchlist
+                ) {
+                    Text(
+                        text = if (isInWatchlist) "İzlemek istiyorum ✓" else "İzlemek istiyorum"
+                    )
+                }
 
-            Text(
-                text = "${movie.rating}",
-                style = MaterialTheme.typography.bodyLarge
-            )
+                FilledTonalButton(
+                    onClick = { onSetStatus(MovieStatus.WATCHED) },
+                    enabled = !isWatched
+                ) {
+                    Text(
+                        text = if (isWatched) "İzledim ✓" else "İzledim"
+                    )
+                }
+            }
+
+            if (status == MovieStatus.NONE) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Bu filmi izlemek istiyor musun, yoksa izledin mi? Aşağıdan işaretleyebilirsin.",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
         }
     }
 }
