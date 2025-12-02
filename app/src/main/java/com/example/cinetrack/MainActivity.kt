@@ -61,8 +61,17 @@ fun CineTrackApp() {
 
         NavHost(
             navController = navController,
-            startDestination = "movie_list"
+            startDestination = "splash"
         ) {
+            composable("splash") {
+                SplashScreen (
+                    onSplashFinished = {
+                        navController.navigate("movie_list") {
+                            popUpTo("splash") {inclusive = true}
+                        }
+                    }
+                )
+            }
             composable("movie_list") {
                 MovieListScreen(
                     uiState = uiState,
