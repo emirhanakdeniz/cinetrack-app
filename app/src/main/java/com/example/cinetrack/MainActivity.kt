@@ -1,5 +1,6 @@
 package com.example.cinetrack
 
+//import androidx.compose.ui.tooling.preview.Preview
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -26,7 +29,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-//import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -64,13 +66,35 @@ fun CineTrackApp() {
                     },
                     onRetryClick = { movieListViewModel.loadPopularMovies() },
                     onNavigateToFavorites = { navController.navigate("favorites") },
-                    onNavigateToSearch = { navController.navigate("search") }
+                    onNavigateToSearch = { navController.navigate("search") },
+                    onNavigateToWatchlist = { navController.navigate("watchlist") },
+                    onNavigateToWatched = { navController.navigate("watched") }
                 )
             }
 
             composable("favorites"){
                 FavoritesScreen(
                     favoriteMovies = uiState.favoriteMovies,
+                    onMovieClick = { movieId ->
+                        navController.navigate("movie_detail/$movieId")
+                    },
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable("watchlist") {
+                WatchlistScreen(
+                    movies = uiState.watchlistMovies,
+                    onMovieClick = { movieId ->
+                        navController.navigate("movie_detail/$movieId")
+                    },
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable("watched") {
+                WatchedScreen(
+                    movies = uiState.watchedMovies,
                     onMovieClick = { movieId ->
                         navController.navigate("movie_detail/$movieId")
                     },
@@ -95,6 +119,8 @@ fun CineTrackApp() {
                 val movieId = backStackEntry.arguments?.getString("movieId")?.toInt()
                 val movie = uiState.movies.find { it.id == movieId }
                     ?: uiState.favoriteMovies.find { it.id == movieId }
+                    ?: uiState.watchlistMovies.find { it.id == movieId }
+                    ?: uiState.watchedMovies.find { it.id == movieId }
                     ?: movieListViewModel.searchUiState.results.find { it.id == movieId }
 
                 movie?.let {
@@ -118,7 +144,9 @@ fun MovieListScreen(
     onMovieClick: (Int) -> Unit,
     onRetryClick: () -> Unit,
     onNavigateToFavorites: () -> Unit,
-    onNavigateToSearch: () -> Unit
+    onNavigateToSearch: () -> Unit,
+    onNavigateToWatchlist: () -> Unit,
+    onNavigateToWatched: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -129,6 +157,18 @@ fun MovieListScreen(
                         Icon(
                             imageVector = Icons.Filled.Search,
                             contentDescription = "Ara"
+                        )
+                    }
+                    IconButton(onClick = onNavigateToWatchlist) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+                            contentDescription = "İzlemek istediklerim"
+                        )
+                    }
+                    IconButton(onClick = onNavigateToWatched) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = "İzlediklerim"
                         )
                     }
                     IconButton(onClick = onNavigateToFavorites) {
@@ -264,10 +304,13 @@ fun MovieListScreen(
 //        movies = sampleMovies
 //    )
 //
-//        MovieListScreen(
-//            uiState = fakeState,
-//            onMovieClick = {},
-//            onRetryClick = {},
-//            onNavigateToFavorites = {}
-//        )
+//    MovieListScreen(
+//        uiState = fakeState,
+//        onMovieClick = {},
+//        onRetryClick = {},
+//        onNavigateToFavorites = {},
+//        onNavigateToSearch = {},
+//        onNavigateToWatchlist = {},
+//        onNavigateToWatched = {}
+//    )
 //}
