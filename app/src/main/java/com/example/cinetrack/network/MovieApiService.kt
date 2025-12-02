@@ -8,7 +8,7 @@ interface MovieApiService {
     @GET("movie/popular")
     suspend fun getPopularMovies(
         @Query("api_key") apiKey: String,
-        @Query("language") language: String = "en-US",
+        @Query("language") language: String = "tr-TR",
         @Query("page") page: Int = 1
     ): MovieListResponse
 
@@ -16,7 +16,7 @@ interface MovieApiService {
     suspend fun searchMovies(
         @Query("api_key") apiKey: String,
         @Query("query") query: String,
-        @Query("language") language: String = "en-US",
+        @Query("language") language: String = "tr-TR",
         @Query("page") page: Int = 1,
         @Query("include_adult") includeAdult: Boolean = false
     ): MovieListResponse

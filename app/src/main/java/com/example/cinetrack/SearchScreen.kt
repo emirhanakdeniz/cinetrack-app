@@ -102,7 +102,8 @@ fun SearchScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Film bulunamadı.")
+                        Text("Sonuç bulunamadı.\n" +
+                                "Yazımını kontrol edebilir veya daha kısa bir ifade deneyebilirsin (ör: 'twilight', 'matrix').")
                     }
                 }
 

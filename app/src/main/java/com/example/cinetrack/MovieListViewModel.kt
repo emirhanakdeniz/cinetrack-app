@@ -11,12 +11,16 @@ import com.example.cinetrack.data.local.TrackedMovieDao
 import com.example.cinetrack.data.local.toMovie
 import com.example.cinetrack.data.local.toTrackedEntity
 import com.example.cinetrack.repository.MovieRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
 class MovieListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = MovieRepository(apiKey = BuildConfig.TMDB_API_KEY)
+
+    private var searchJob: Job? = null
 
     private val trackedMovieDao: TrackedMovieDao =
         AppDatabase.getInstance(getApplication()).trackedMovieDao()
@@ -82,10 +86,34 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun updateSearchQuery(newQuery: String) {
         searchUiState = searchUiState.copy(query = newQuery)
+
+        searchJob?.cancel()
+
+        if (newQuery.isBlank()) {
+            searchUiState = searchUiState.copy(
+                isLoading = false,
+                results = emptyList(),
+                errorMessage = null
+            )
+            return
+        }
+
+        searchJob = viewModelScope.launch {
+            delay(400)
+            performSearchInternal(newQuery)
+        }
     }
 
-    fun performSearch() {
+     fun performSearch() {
+        // Enter'a basınca çağıracağımız hızlı arama
         val query = searchUiState.query.trim()
+        searchJob = viewModelScope.launch {
+            performSearchInternal(query)
+        }
+    }
+
+    private suspend fun performSearchInternal(rawQuery: String) {
+        val query = rawQuery.trim()
         if (query.isBlank()) {
             searchUiState = searchUiState.copy(
                 isLoading = false,
@@ -100,20 +128,18 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
             errorMessage = null
         )
 
-        viewModelScope.launch {
-            try {
-                val movies = repository.searchMovies(query)
-                searchUiState = searchUiState.copy(
-                    isLoading = false,
-                    results = movies,
-                    errorMessage = null
-                )
-            } catch (e: Exception) {
-                searchUiState = searchUiState.copy(
-                    isLoading = false,
-                    errorMessage = e.localizedMessage ?: "Bir hata oluştu."
-                )
-            }
+        try {
+            val movies = repository.searchMovies(query)
+            searchUiState = searchUiState.copy(
+                isLoading = false,
+                results = movies,
+                errorMessage = null
+            )
+        } catch (e: Exception) {
+            searchUiState = searchUiState.copy(
+                isLoading = false,
+                errorMessage = e.localizedMessage ?: "Arama sırasında bir hata oluştu"
+            )
         }
     }
 

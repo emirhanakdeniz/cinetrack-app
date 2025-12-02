@@ -10,12 +10,18 @@ fun MovieDto.toMovie(): Movie {
     val posterUrl = if (!poster_path.isNullOrEmpty()) {
         TMDB_IMAGE_BASE_URL + poster_path
     } else {
-        "https://via.placeholder.com/300x450.png?text=${title}"
+        "https://via.placeholder.com/300x450.png?text=${title ?: original_title ?: "No+Title"}"
+    }
+
+    val displayTitle = when {
+        !title.isNullOrBlank() -> title
+        !original_title.isNullOrBlank() -> original_title
+        else -> "Bilinmeyen Film"
     }
 
     return Movie(
         id = id,
-        title = title,
+        title = displayTitle,
         rating = vote_average,
         year = year,
         posterUrl = posterUrl
