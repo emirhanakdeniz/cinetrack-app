@@ -23,6 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -208,13 +209,17 @@ fun MovieListScreen(
                             .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = "Bir hata oluştu.")
+                        Text(text = "Filmler yüklenemedi 😕")
                         Spacer(modifier = Modifier.padding(top = 4.dp))
-                        Text(text = uiState.errorMessage)
+                        Text(
+                            text = "İnternet bağlantını veya TMDb servisini kontrol et.\nİstersen tekrar deneyebilirsin.",
+                            style = MaterialTheme.typography.bodySmall
+                        )
                         Spacer(modifier = Modifier.padding(top = 8.dp))
                         Button(onClick = onRetryClick) {
-                            Text(text = "Tekrar Dene")
+                            Text(text = "Tekrar dene")
                         }
+
                     }
                 }
 
