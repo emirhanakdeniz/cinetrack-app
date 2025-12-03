@@ -59,47 +59,38 @@ fun MovieDetailScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(movie.title) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Geri"
-                        )
+    Scaffold(topBar = {
+        TopAppBar(title = { Text(movie.title) }, navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri"
+                )
+            }
+        }, actions = {
+            IconButton(
+                onClick = {
+                    val message = if (isFavorite) {
+                        "Favorilerden çıkarıldı"
+                    } else {
+                        "Favorilere eklendi"
                     }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            val message = if (isFavorite) {
-                                "Favorilerden çıkarıldı"
-                            } else {
-                                "Favorilere eklendi"
-                            }
 
-                            scope.launch {
-                                snackbarHostState.showSnackbar(message)
-                            }
-
-                            onToggleFavorite()
-                        }
-                    ){
-                        Icon(
-                            imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
-                            contentDescription = if (isFavorite) "Favoriden çıkar" else "Favorilere ekle",
-                            tint = if (isFavorite) CineGold else MaterialTheme.colorScheme.onSurface
-                        )
+                    scope.launch {
+                        snackbarHostState.showSnackbar(message)
                     }
-                }
-            )
-        },
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState)
-        }
-    ) { innerPadding ->
+
+                    onToggleFavorite()
+                }) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    contentDescription = if (isFavorite) "Favoriden çıkar" else "Favorilere ekle",
+                    tint = if (isFavorite) CineGold else MaterialTheme.colorScheme.onSurface
+                )
+            }
+        })
+    }, snackbarHost = {
+        SnackbarHost(hostState = snackbarHostState)
+    }) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -141,8 +132,7 @@ fun MovieDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${movie.year}",
-                    style = MaterialTheme.typography.bodyLarge
+                    text = "${movie.year}", style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Icon(
@@ -152,8 +142,7 @@ fun MovieDetailScreen(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "${movie.rating}",
-                    style = MaterialTheme.typography.bodyLarge
+                    text = "${movie.rating}", style = MaterialTheme.typography.bodyLarge
                 )
             }
 
@@ -161,13 +150,12 @@ fun MovieDetailScreen(
 
             movie.overview?.takeIf { it.isNotBlank() }?.let { overview ->
                 Text(
-                    text = overview,
-                    style = MaterialTheme.typography.bodyMedium
+                    text = overview, style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
-            movie.originalLanguage?.takeIf { it.isNotBlank()}?.let {lang ->
+            movie.originalLanguage?.takeIf { it.isNotBlank() }?.let { lang ->
                 Text(
                     text = "Orijinal dil: ${lang.uppercase()}",
                     style = MaterialTheme.typography.bodySmall
@@ -186,11 +174,18 @@ fun MovieDetailScreen(
 
                 FilledTonalButton(
                     onClick = {
+                        val message = if (isInWatchlist) {
+                            "İzleme listesinden çıkarıldı"
+                        } else {
+                            "İzleme listesine eklendi"
+                        }
+
                         onSetStatus(MovieStatus.WATCHLIST)
-                              scope.launch {
-                                  snackbarHostState.showSnackbar("İzlemek istediklerine eklendi")
-                              }
-                        },
+
+                        scope.launch {
+                            snackbarHostState.showSnackbar(message)
+                        }
+                    },
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
@@ -206,9 +201,16 @@ fun MovieDetailScreen(
 
                 FilledTonalButton(
                     onClick = {
+                        val message = if (isWatched) {
+                            "İzlenenlerden çıkarıldı"
+                        } else {
+                            "İzledim olarak işaretlendi"
+                        }
+
                         onSetStatus(MovieStatus.WATCHED)
+
                         scope.launch {
-                            snackbarHostState.showSnackbar("İzledim olarak işaretlendi")
+                            snackbarHostState.showSnackbar(message)
                         }
                     },
                 ) {
