@@ -30,7 +30,7 @@ fun WatchlistScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("İzlemek İstediklerim")},
+                title = { Text("İzlemek İstediklerim") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -48,7 +48,7 @@ fun WatchlistScreen(
                     .padding(innerPadding)
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 Text("İzlemek istediğiniz bir film eklemedin.")
             }
         } else {

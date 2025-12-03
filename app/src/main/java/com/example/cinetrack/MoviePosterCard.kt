@@ -31,7 +31,7 @@ fun MoviePosterCard(
         modifier = Modifier
             .aspectRatio(0.65f) // poster ratio
             .clip(RoundedCornerShape(12.dp))
-            .clickable{ onClick() }
+            .clickable { onClick() }
     ) {
         AsyncImage(
             model = movie.posterUrl,

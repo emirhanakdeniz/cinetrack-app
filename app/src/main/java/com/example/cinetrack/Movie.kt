@@ -31,20 +31,20 @@ val sampleMovies = listOf(
         9.0,
         2008,
         "https://www.movieposters.com/cdn/shop/products/darkknight.building.mp.jpg?v=1762970009&width=1680"
-        ),
+    ),
     Movie(
         4,
         "The Matrix",
         8.7,
         1999,
         "https://www.movieposters.com/cdn/shop/products/ed4796ac6feff9d2a6115406f964c928_6b200bda-fe71-4900-ad7f-903cdda50dab.jpg?v=1762505090&width=1680"
-        ),
+    ),
     Movie(
         5,
         "Fight Club",
         8.8,
         1999,
         "https://www.movieposters.com/cdn/shop/files/FightClub.mpw.125100.jpg?v=1762965511&width=1680"
-        ),
+    ),
 )
 

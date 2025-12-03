@@ -36,7 +36,7 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         loadTrackedMovies()
     }
 
-    fun loadPopularMovies(){
+    fun loadPopularMovies() {
         uiState = uiState.copy(isLoading = true, errorMessage = null)
 
         viewModelScope.launch {
@@ -66,7 +66,7 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
                 favoriteIDs = favorites.map { it.id }.toSet(),
                 favoriteMovies = favorites.map { it.toMovie() },
                 watchlistMovies = watchlist.map { it.toMovie() },
-                watchedMovies = watched.map { it.toMovie()}
+                watchedMovies = watched.map { it.toMovie() }
             )
         }
     }
@@ -104,7 +104,7 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-     fun performSearch() {
+    fun performSearch() {
         val query = searchUiState.query.trim()
         searchJob = viewModelScope.launch {
             performSearchInternal(query)

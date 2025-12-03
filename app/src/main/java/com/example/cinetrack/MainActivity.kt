@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CineTrackTheme(darkTheme = true){
+            CineTrackTheme(darkTheme = true) {
                 CineTrackApp()
             }
         }
@@ -55,108 +55,108 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CineTrackApp() {
-        val navController = rememberNavController()
-        val movieListViewModel: MovieListViewModel = viewModel()
-        val uiState = movieListViewModel.uiState
+    val navController = rememberNavController()
+    val movieListViewModel: MovieListViewModel = viewModel()
+    val uiState = movieListViewModel.uiState
 
-        NavHost(
-            navController = navController,
-            startDestination = "splash"
-        ) {
-            composable("splash") {
-                SplashScreen (
-                    onSplashFinished = {
-                        navController.navigate("movie_list") {
-                            popUpTo("splash") {inclusive = true}
-                        }
+    NavHost(
+        navController = navController,
+        startDestination = "splash"
+    ) {
+        composable("splash") {
+            SplashScreen(
+                onSplashFinished = {
+                    navController.navigate("movie_list") {
+                        popUpTo("splash") { inclusive = true }
                     }
-                )
-            }
-            composable("movie_list") {
-                MovieListScreen(
-                    uiState = uiState,
-                    onMovieClick = { movieId ->
-                        navController.navigate("movie_detail/$movieId")
-                    },
-                    onRetryClick = { movieListViewModel.loadPopularMovies() },
-                    onNavigateToFavorites = { navController.navigate("favorites") },
-                    onNavigateToSearch = { navController.navigate("search") },
-                    onNavigateToWatchlist = { navController.navigate("watchlist") },
-                    onNavigateToWatched = { navController.navigate("watched") }
-                )
-            }
-
-            composable("favorites"){
-                FavoritesScreen(
-                    favoriteMovies = uiState.favoriteMovies,
-                    onMovieClick = { movieId ->
-                        navController.navigate("movie_detail/$movieId")
-                    },
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
-
-            composable("watchlist") {
-                WatchlistScreen(
-                    movies = uiState.watchlistMovies,
-                    onMovieClick = { movieId ->
-                        navController.navigate("movie_detail/$movieId")
-                    },
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
-
-            composable("watched") {
-                WatchedScreen(
-                    movies = uiState.watchedMovies,
-                    onMovieClick = { movieId ->
-                        navController.navigate("movie_detail/$movieId")
-                    },
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
-
-            composable("search"){
-                val searchUiState = movieListViewModel.searchUiState
-                SearchScreen(
-                    uiState = searchUiState,
-                    onQueryChange = { movieListViewModel.updateSearchQuery(it) },
-                    onSearch = { movieListViewModel.performSearch() },
-                    onMovieClick = { movieId ->
-                        navController.navigate("movie_detail/$movieId")
-                    },
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
-
-            composable("movie_detail/{movieId}") { backStackEntry ->
-                val movieId = backStackEntry.arguments?.getString("movieId")?.toInt()
-                val movie = uiState.movies.find { it.id == movieId }
-                    ?: uiState.favoriteMovies.find { it.id == movieId }
-                    ?: uiState.watchlistMovies.find { it.id == movieId }
-                    ?: uiState.watchedMovies.find { it.id == movieId }
-                    ?: movieListViewModel.searchUiState.results.find { it.id == movieId }
-
-                movie?.let {
-                    val isFavorite = uiState.favoriteIDs.contains(it.id)
-
-                    val currentStatus = when {
-                        uiState.watchlistMovies.any{ m -> m.id == it.id } -> MovieStatus.WATCHLIST
-                        uiState.watchedMovies.any{ m -> m.id == it.id } -> MovieStatus.WATCHED
-                        else -> MovieStatus.NONE
-                    }
-
-                    MovieDetailScreen(
-                        movie = it,
-                        isFavorite = isFavorite,
-                        status = currentStatus,
-                        onBackClick = { navController.popBackStack() },
-                        onToggleFavorite = { movieListViewModel.toggleFavorite(it) },
-                        onSetStatus = { status -> movieListViewModel.setMovieStatus(it, status) }
-                    )
                 }
+            )
+        }
+        composable("movie_list") {
+            MovieListScreen(
+                uiState = uiState,
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                },
+                onRetryClick = { movieListViewModel.loadPopularMovies() },
+                onNavigateToFavorites = { navController.navigate("favorites") },
+                onNavigateToSearch = { navController.navigate("search") },
+                onNavigateToWatchlist = { navController.navigate("watchlist") },
+                onNavigateToWatched = { navController.navigate("watched") }
+            )
+        }
+
+        composable("favorites") {
+            FavoritesScreen(
+                favoriteMovies = uiState.favoriteMovies,
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable("watchlist") {
+            WatchlistScreen(
+                movies = uiState.watchlistMovies,
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable("watched") {
+            WatchedScreen(
+                movies = uiState.watchedMovies,
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable("search") {
+            val searchUiState = movieListViewModel.searchUiState
+            SearchScreen(
+                uiState = searchUiState,
+                onQueryChange = { movieListViewModel.updateSearchQuery(it) },
+                onSearch = { movieListViewModel.performSearch() },
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable("movie_detail/{movieId}") { backStackEntry ->
+            val movieId = backStackEntry.arguments?.getString("movieId")?.toInt()
+            val movie = uiState.movies.find { it.id == movieId }
+                ?: uiState.favoriteMovies.find { it.id == movieId }
+                ?: uiState.watchlistMovies.find { it.id == movieId }
+                ?: uiState.watchedMovies.find { it.id == movieId }
+                ?: movieListViewModel.searchUiState.results.find { it.id == movieId }
+
+            movie?.let {
+                val isFavorite = uiState.favoriteIDs.contains(it.id)
+
+                val currentStatus = when {
+                    uiState.watchlistMovies.any { m -> m.id == it.id } -> MovieStatus.WATCHLIST
+                    uiState.watchedMovies.any { m -> m.id == it.id } -> MovieStatus.WATCHED
+                    else -> MovieStatus.NONE
+                }
+
+                MovieDetailScreen(
+                    movie = it,
+                    isFavorite = isFavorite,
+                    status = currentStatus,
+                    onBackClick = { navController.popBackStack() },
+                    onToggleFavorite = { movieListViewModel.toggleFavorite(it) },
+                    onSetStatus = { status -> movieListViewModel.setMovieStatus(it, status) }
+                )
             }
         }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

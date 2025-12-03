@@ -5,7 +5,7 @@ import com.example.cinetrack.MovieStatus
 
 class Converters {
     @TypeConverter
-    fun fromStatus(status: MovieStatus?) : String? {
+    fun fromStatus(status: MovieStatus?): String? {
         return status?.name
     }
 
