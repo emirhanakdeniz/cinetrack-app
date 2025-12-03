@@ -1,7 +1,6 @@
 package com.example.cinetrack
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -16,41 +15,31 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.cinetrack.ui.components.EmptyState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WatchedScreen(
-    movies: List<Movie>,
-    onMovieClick: (Int) -> Unit,
-    onBackClick: () -> Unit
+    movies: List<Movie>, onMovieClick: (Int) -> Unit, onBackClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("İzlediklerim") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Geri"
-                        )
-                    }
+            TopAppBar(title = { Text("İzlediklerim") }, navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Geri"
+                    )
                 }
-            )
-        }
-    ) { innerPadding ->
+            })
+        }) { innerPadding ->
         if (movies.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Henüz izlenmiş film eklemedin.")
-            }
+            EmptyState(
+                title = "Henüz film işaretlemedin.",
+                message = "Hiç film izlememiş olamazsın. İzlediklerini aratıp izledim olarak işaretlemelisin."
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -63,9 +52,7 @@ fun WatchedScreen(
             ) {
                 items(movies) { movie ->
                     MoviePosterCard(
-                        movie = movie,
-                        onClick = { onMovieClick(movie.id) }
-                    )
+                        movie = movie, onClick = { onMovieClick(movie.id) })
                 }
             }
         }

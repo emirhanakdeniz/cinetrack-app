@@ -1,7 +1,6 @@
 package com.example.cinetrack
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -15,41 +14,31 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.cinetrack.ui.components.EmptyState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
-    favoriteMovies: List<Movie>,
-    onMovieClick: (Int) -> Unit,
-    onBackClick: () -> Unit
+    favoriteMovies: List<Movie>, onMovieClick: (Int) -> Unit, onBackClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Favoriler") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Geri"
-                        )
-                    }
+            TopAppBar(title = { Text("Favoriler") }, navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Geri"
+                    )
                 }
-            )
-        }
-    ) { innerPadding ->
+            })
+        }) { innerPadding ->
         if (favoriteMovies.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Henüz favori film yok.")
-            }
+            EmptyState(
+                title = "Favoriler boş",
+                message = "Henüz bir film eklememişsin gibi gözüküyor. Yeni filmlere göz atmaya ne dersin?"
+            )
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -63,9 +52,7 @@ fun FavoritesScreen(
                 items(favoriteMovies.size) { index ->
                     val movie = favoriteMovies[index]
                     MoviePosterCard(
-                        movie = movie,
-                        onClick = { onMovieClick(movie.id) }
-                    )
+                        movie = movie, onClick = { onMovieClick(movie.id) })
                 }
             }
         }

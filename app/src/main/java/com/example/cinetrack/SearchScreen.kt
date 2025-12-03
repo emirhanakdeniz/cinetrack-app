@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.example.cinetrack.ui.components.EmptyState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,19 +44,15 @@ fun SearchScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Film Ara") },
-                navigationIcon = {
-                    IconButton(onClick = { onBackClick() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Geri"
-                        )
-                    }
+            TopAppBar(title = { Text("Film Ara") }, navigationIcon = {
+                IconButton(onClick = { onBackClick() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Geri"
+                    )
                 }
-            )
-        }
-    ) { innerPadding ->
+            })
+        }) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -70,25 +67,21 @@ fun SearchScreen(
                 placeholder = { Text("Film adı yaz...") },
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Ara"
+                        imageVector = Icons.Filled.Search, contentDescription = "Ara"
                     )
                 },
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Search
                 ),
                 keyboardActions = KeyboardActions(
-                    onSearch = { onSearch() }
-                )
-            )
+                    onSearch = { onSearch() }))
 
             Spacer(modifier = Modifier.padding(16.dp))
 
             when {
                 uiState.isLoading -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                     ) {
                         CircularProgressIndicator()
                     }
@@ -96,8 +89,7 @@ fun SearchScreen(
 
                 uiState.errorMessage != null -> {
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
@@ -112,24 +104,17 @@ fun SearchScreen(
                 }
 
                 uiState.results.isEmpty() && uiState.query.isNotBlank() -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "Sonuç bulunamadı.\n" +
-                                    "Yazımını kontrol edebilir veya daha kısa bir ifade deneyebilirsin (ör: 'twilight', 'matrix')."
-                        )
-                    }
+                    EmptyState(
+                        title = "Sonuç bulunamadı",
+                        message = "Başka bir anahtar kelime deneyebilirsin."
+                    )
                 }
 
                 uiState.results.isEmpty() && uiState.query.isBlank() -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Lütfen bir film adı girin.")
-                    }
+                    EmptyState(
+                        title = "Film ara",
+                        message = "İstediğin filmi bulmak için yukarıdaki arama çubuğunu kullanabilirsin."
+                    )
                 }
 
                 else -> {
@@ -141,9 +126,7 @@ fun SearchScreen(
                     ) {
                         items(uiState.results) { movie ->
                             MoviePosterCard(
-                                movie = movie,
-                                onClick = { onMovieClick(movie.id) }
-                            )
+                                movie = movie, onClick = { onMovieClick(movie.id) })
                         }
                     }
                 }
