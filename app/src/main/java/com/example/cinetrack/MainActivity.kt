@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +32,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -38,30 +42,38 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.cinetrack.ui.settings.SettingsScreen
+import com.example.cinetrack.ui.settings.ThemeViewModel
 import com.example.cinetrack.ui.theme.CineGold
 import com.example.cinetrack.ui.theme.CineTrackTheme
 
 class MainActivity : ComponentActivity() {
+    private val themeViewModel: ThemeViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CineTrackTheme(darkTheme = true) {
-                CineTrackApp()
+            val themeMode by themeViewModel.themeMode.collectAsState()
+            CineTrackTheme(themeMode = themeMode) {
+                CineTrackApp(
+                    themeMode = themeMode, onThemeChange = { themeViewModel.setTheme(it) })
             }
         }
     }
 }
 
 @Composable
-fun CineTrackApp() {
+fun CineTrackApp(
+    themeMode: Int, onThemeChange: (Int) -> Unit
+) {
     val navController = rememberNavController()
     val movieListViewModel: MovieListViewModel = viewModel()
+
     val uiState = movieListViewModel.uiState
 
     NavHost(
-        navController = navController,
-        startDestination = "splash"
+        navController = navController, startDestination = "splash"
     ) {
         composable("splash") {
             SplashScreen(
@@ -69,8 +81,7 @@ fun CineTrackApp() {
                     navController.navigate("movie_list") {
                         popUpTo("splash") { inclusive = true }
                     }
-                }
-            )
+                })
         }
         composable("movie_list") {
             MovieListScreen(
@@ -82,38 +93,26 @@ fun CineTrackApp() {
                 onNavigateToFavorites = { navController.navigate("favorites") },
                 onNavigateToSearch = { navController.navigate("search") },
                 onNavigateToWatchlist = { navController.navigate("watchlist") },
-                onNavigateToWatched = { navController.navigate("watched") }
-            )
+                onNavigateToWatched = { navController.navigate("watched") },
+                onNavigateToSettings = { navController.navigate("settings") })
         }
 
         composable("favorites") {
-            FavoritesScreen(
-                favoriteMovies = uiState.favoriteMovies,
-                onMovieClick = { movieId ->
-                    navController.navigate("movie_detail/$movieId")
-                },
-                onBackClick = { navController.popBackStack() }
-            )
+            FavoritesScreen(favoriteMovies = uiState.favoriteMovies, onMovieClick = { movieId ->
+                navController.navigate("movie_detail/$movieId")
+            }, onBackClick = { navController.popBackStack() })
         }
 
         composable("watchlist") {
-            WatchlistScreen(
-                movies = uiState.watchlistMovies,
-                onMovieClick = { movieId ->
-                    navController.navigate("movie_detail/$movieId")
-                },
-                onBackClick = { navController.popBackStack() }
-            )
+            WatchlistScreen(movies = uiState.watchlistMovies, onMovieClick = { movieId ->
+                navController.navigate("movie_detail/$movieId")
+            }, onBackClick = { navController.popBackStack() })
         }
 
         composable("watched") {
-            WatchedScreen(
-                movies = uiState.watchedMovies,
-                onMovieClick = { movieId ->
-                    navController.navigate("movie_detail/$movieId")
-                },
-                onBackClick = { navController.popBackStack() }
-            )
+            WatchedScreen(movies = uiState.watchedMovies, onMovieClick = { movieId ->
+                navController.navigate("movie_detail/$movieId")
+            }, onBackClick = { navController.popBackStack() })
         }
 
         composable("search") {
@@ -125,8 +124,14 @@ fun CineTrackApp() {
                 onMovieClick = { movieId ->
                     navController.navigate("movie_detail/$movieId")
                 },
-                onBackClick = { navController.popBackStack() }
-            )
+                onBackClick = { navController.popBackStack() })
+        }
+
+        composable("settings") {
+            SettingsScreen(
+                themeMode = themeMode,
+                onThemeChange = onThemeChange,
+                onBack = { navController.popBackStack() })
         }
 
         composable("movie_detail/{movieId}") { backStackEntry ->
@@ -152,8 +157,7 @@ fun CineTrackApp() {
                     status = currentStatus,
                     onBackClick = { navController.popBackStack() },
                     onToggleFavorite = { movieListViewModel.toggleFavorite(it) },
-                    onSetStatus = { status -> movieListViewModel.setMovieStatus(it, status) }
-                )
+                    onSetStatus = { status -> movieListViewModel.setMovieStatus(it, status) })
             }
         }
     }
@@ -168,45 +172,47 @@ fun MovieListScreen(
     onNavigateToFavorites: () -> Unit,
     onNavigateToSearch: () -> Unit,
     onNavigateToWatchlist: () -> Unit,
-    onNavigateToWatched: () -> Unit
+    onNavigateToWatched: () -> Unit,
+    onNavigateToSettings: () -> Unit
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { CineTrackAppBarTitle() },
-                actions = {
-                    IconButton(onClick = onNavigateToSearch) {
-                        Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = "Ara",
-                        )
-                    }
-                    IconButton(onClick = onNavigateToWatchlist) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
-                            contentDescription = "İzlemek istediklerim",
-                            tint = CineGold
-                        )
-                    }
-                    IconButton(onClick = onNavigateToWatched) {
-                        Icon(
-                            imageVector = Icons.Filled.CheckCircle,
-                            contentDescription = "İzlediklerim",
-                            tint = CineGold
-                        )
-                    }
-                    IconButton(onClick = onNavigateToFavorites) {
-                        Icon(
-                            imageVector = Icons.Filled.Favorite,
-                            contentDescription = "Favoriler",
-                            tint = CineGold
-
-                        )
-                    }
+            TopAppBar(title = { CineTrackAppBarTitle() }, actions = {
+                IconButton(onClick = onNavigateToSearch) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Ara",
+                    )
                 }
-            )
-        }
-    ) { innerPadding ->
+                IconButton(onClick = onNavigateToWatchlist) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+                        contentDescription = "İzlemek istediklerim",
+                        tint = CineGold
+                    )
+                }
+                IconButton(onClick = onNavigateToWatched) {
+                    Icon(
+                        imageVector = Icons.Filled.CheckCircle,
+                        contentDescription = "İzlediklerim",
+                        tint = CineGold
+                    )
+                }
+                IconButton(onClick = onNavigateToFavorites) {
+                    Icon(
+                        imageVector = Icons.Filled.Favorite,
+                        contentDescription = "Favoriler",
+                        tint = CineGold
+
+                    )
+                }
+                IconButton(onClick = onNavigateToSettings) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings, contentDescription = "Ayarlar"
+                    )
+                }
+            })
+        }) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -252,9 +258,7 @@ fun MovieListScreen(
                         items(uiState.movies.size) { index ->
                             val movie = uiState.movies[index]
                             MoviePosterCard(
-                                movie = movie,
-                                onClick = { onMovieClick(movie.id) }
-                            )
+                                movie = movie, onClick = { onMovieClick(movie.id) })
                         }
                     }
                 }

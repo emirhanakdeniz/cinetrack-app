@@ -31,15 +31,24 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun CineTrackTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: Int, // 0 system, 1 light, 2 dark
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val isDarkTheme = when (themeMode) {
+        1 -> false // light
+        2 -> true // dark
+        else -> isSystemInDarkTheme()
+    }
+
+    val colorScheme = if(isDarkTheme) {
+        darkColorScheme()
+    } else {
+        lightColorScheme()
+    }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        shapes = Shapes,
         content = content
     )
 }
