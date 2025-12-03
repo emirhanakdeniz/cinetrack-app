@@ -191,7 +191,6 @@ fun MovieDetailScreen(
                                   snackbarHostState.showSnackbar("İzlemek istediklerine eklendi")
                               }
                         },
-                    enabled = !isInWatchlist
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
@@ -201,7 +200,7 @@ fun MovieDetailScreen(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = if (isInWatchlist) "İzlemek istiyorum ✓" else "İzlemek istiyorum"
+                        text = if (isInWatchlist) "İzleme listemden çıkar" else "İzlemek istiyorum"
                     )
                 }
 
@@ -212,7 +211,6 @@ fun MovieDetailScreen(
                             snackbarHostState.showSnackbar("İzledim olarak işaretlendi")
                         }
                     },
-                    enabled = !isWatched
                 ) {
                     Icon(
                         imageVector = Icons.Filled.CheckCircle,
@@ -222,7 +220,7 @@ fun MovieDetailScreen(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = if (isWatched) "İzledim ✓" else "İzledim"
+                        text = if (isWatched) "İzlediklerimden çıkar" else "İzledim"
                     )
                 }
             }

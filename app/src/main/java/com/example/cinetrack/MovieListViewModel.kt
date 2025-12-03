@@ -105,7 +105,6 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
      fun performSearch() {
-        // Enter'a basınca çağıracağımız hızlı arama
         val query = searchUiState.query.trim()
         searchJob = viewModelScope.launch {
             performSearchInternal(query)
@@ -146,8 +145,16 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
     fun setMovieStatus(movie: Movie, status: MovieStatus) {
         viewModelScope.launch {
             val existing = trackedMovieDao.getById(movie.id)
+            val currentStatus = existing?.status ?: MovieStatus.NONE
+
+            val newStatus = if (currentStatus == status) {
+                MovieStatus.NONE
+            } else {
+                status
+            }
+
             val updated = (existing ?: movie.toTrackedEntity())
-                .copy(status = status)
+                .copy(status = newStatus)
 
             trackedMovieDao.upsert(updated)
             loadTrackedMovies()

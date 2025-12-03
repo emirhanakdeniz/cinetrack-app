@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CineTrackTheme{
+            CineTrackTheme(darkTheme = true){
                 CineTrackApp()
             }
         }
