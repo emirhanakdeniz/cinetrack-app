@@ -168,12 +168,12 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
 
         if (pool.isEmpty()) return emptyList()
 
-        val shuffled = pool.shuffled()
+//        val shuffled = pool.shuffled()
 
         val usedFranchises = mutableSetOf<String>()
         val result = mutableListOf<Int>()
 
-        for (movie in shuffled) {
+        for (movie in pool) {
             if (result.size >= 4) break
 
             val key = getFranchiseKey(movie.title)
