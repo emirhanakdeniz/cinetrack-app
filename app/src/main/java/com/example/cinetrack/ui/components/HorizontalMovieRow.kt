@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import com.example.cinetrack.FeaturedMoviePosterCard
 import com.example.cinetrack.Movie
 import com.example.cinetrack.MoviePosterCard
 
@@ -19,6 +20,21 @@ fun HorizontalMovieRow(
     ) {
         items(movies) { movie ->
             MoviePosterCard(
+                movie = movie, onClick = { onMovieClick(movie.id) })
+        }
+    }
+}
+
+@Composable
+fun HorizontalFeaturedMovieRow(
+    movies: List<Movie>, onMovieClick: (Int) -> Unit
+) {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(movies) { movie ->
+            FeaturedMoviePosterCard(
                 movie = movie, onClick = { onMovieClick(movie.id) })
         }
     }

@@ -40,7 +40,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.cinetrack.ui.components.HorizontalFeaturedMovieRow
 import com.example.cinetrack.ui.components.HorizontalMovieRow
+import com.example.cinetrack.ui.components.MovieSectionScreen
 import com.example.cinetrack.ui.components.SectionTitle
 import com.example.cinetrack.ui.home.RecommendationPlaceholder
 import com.example.cinetrack.ui.settings.SettingsScreen
@@ -93,10 +95,13 @@ fun CineTrackApp(
                 onRetryClick = { movieListViewModel.loadPopularMovies() },
                 onNavigateToFavorites = { navController.navigate("favorites") },
                 onNavigateToSearch = { navController.navigate("search") },
-                onNavigateToWatchlist = { navController.navigate("watchlist") },
-                onNavigateToWatched = { navController.navigate("watched") },
-                onNavigateToSettings = { navController.navigate("settings") })
+                onNavigateToSettings = { navController.navigate("settings") },
+                onSeeAllRecommended = { navController.navigate("recommended_full") },
+                onSeeAllPopular = { navController.navigate("popular_full") },
+                onSeeAllWatchlist = { navController.navigate("watchlist") },
+                onSeeAllWatched = { navController.navigate("watched") })
         }
+
 
         composable("favorites") {
             FavoritesScreen(favoriteMovies = uiState.favoriteMovies, onMovieClick = { movieId ->
@@ -134,6 +139,27 @@ fun CineTrackApp(
                 onThemeChange = onThemeChange,
                 onBack = { navController.popBackStack() })
         }
+
+        composable("popular_full") {
+            MovieSectionScreen(
+                title = "Popüler Filmler",
+                movies = uiState.movies,
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                },
+                onBackClick = { navController.popBackStack() })
+        }
+
+        composable("recommended_full") {
+            MovieSectionScreen(
+                title = "Senin İçin Önerilenler",
+                movies = uiState.recommendedMovies,
+                onMovieClick = { movieId ->
+                    navController.navigate("movie_detail/$movieId")
+                },
+                onBackClick = { navController.popBackStack() })
+        }
+
 
         composable("movie_detail/{movieId}") { backStackEntry ->
             val movieId = backStackEntry.arguments?.getString("movieId")?.toInt()
@@ -173,9 +199,11 @@ fun MovieListScreen(
     onRetryClick: () -> Unit,
     onNavigateToFavorites: () -> Unit,
     onNavigateToSearch: () -> Unit,
-    onNavigateToWatchlist: () -> Unit,
-    onNavigateToWatched: () -> Unit,
-    onNavigateToSettings: () -> Unit
+    onNavigateToSettings: () -> Unit,
+    onSeeAllRecommended: () -> Unit,
+    onSeeAllPopular: () -> Unit,
+    onSeeAllWatchlist: () -> Unit,
+    onSeeAllWatched: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -257,15 +285,19 @@ fun MovieListScreen(
                     ) {
                         // FOR YOU PAGE
                         item {
-                            SectionTitle(title = "Senin İçin Önerilenler")
+                            SectionTitle(
+                                title = "Senin İçin Önerilenler",
+                                onSeeAllClick = if (uiState.recommendedMovies.isNotEmpty()) onSeeAllRecommended else null
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
+
                             if (uiState.recommendedMovies.isNotEmpty()) {
-                                HorizontalMovieRow(
+                                HorizontalFeaturedMovieRow(
                                     movies = uiState.recommendedMovies, onMovieClick = onMovieClick
                                 )
                             } else {
                                 RecommendationPlaceholder(
-                                    hasFavorites = uiState.favoriteMovies.isNotEmpty() || uiState.watchedMovies.isNotEmpty() || uiState.watchlistMovies.isNotEmpty()
+                                    hasFavorites = uiState.favoriteMovies.isNotEmpty() || uiState.watchlistMovies.isNotEmpty() || uiState.watchedMovies.isNotEmpty()
                                 )
                             }
                         }
@@ -273,34 +305,49 @@ fun MovieListScreen(
                         // POPULAR MOVEIS
                         if (uiState.movies.isNotEmpty()) {
                             item {
-                                SectionTitle(title = "Popüler Filmler")
-                                Spacer(modifier = Modifier.height(8.dp))
+                                SectionTitle(
+                                    title = "Popüler Filmler",
+                                    onSeeAllClick = if (uiState.movies.isNotEmpty()) onSeeAllPopular else null
+                                )
+                                Spacer(Modifier.height(8.dp))
                                 HorizontalMovieRow(
                                     movies = uiState.movies, onMovieClick = onMovieClick
                                 )
                             }
+
                         }
 
                         // WATCH LIST
                         if (uiState.watchlistMovies.isNotEmpty()) {
-                            item {
-                                SectionTitle(title = "İzleme listen")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                HorizontalMovieRow(
-                                    movies = uiState.watchlistMovies, onMovieClick = onMovieClick
-                                )
+                            if (uiState.watchlistMovies.isNotEmpty()) {
+                                item {
+                                    SectionTitle(
+                                        title = "İzleme Listen", onSeeAllClick = onSeeAllWatchlist
+                                    )
+                                    Spacer(Modifier.height(8.dp))
+                                    HorizontalMovieRow(
+                                        movies = uiState.watchlistMovies,
+                                        onMovieClick = onMovieClick
+                                    )
+                                }
                             }
+
                         }
 
                         // WATCHED LIST
                         if (uiState.watchedMovies.isNotEmpty()) {
-                            item {
-                                SectionTitle(title = "İzlediklerin")
-                                Spacer(modifier = Modifier.height(8.dp))
-                                HorizontalMovieRow(
-                                    movies = uiState.watchedMovies, onMovieClick = onMovieClick
-                                )
+                            if (uiState.watchedMovies.isNotEmpty()) {
+                                item {
+                                    SectionTitle(
+                                        title = "İzlediklerin", onSeeAllClick = onSeeAllWatched
+                                    )
+                                    Spacer(Modifier.height(8.dp))
+                                    HorizontalMovieRow(
+                                        movies = uiState.watchedMovies, onMovieClick = onMovieClick
+                                    )
+                                }
                             }
+
                         }
                     }
                 }
