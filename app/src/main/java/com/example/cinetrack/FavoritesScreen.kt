@@ -51,7 +51,7 @@ fun FavoritesScreen(
             ) {
                 items(favoriteMovies.size) { index ->
                     val movie = favoriteMovies[index]
-                    MoviePosterCard(
+                    GridMoviePosterCard(
                         movie = movie, onClick = { onMovieClick(movie.id) })
                 }
             }

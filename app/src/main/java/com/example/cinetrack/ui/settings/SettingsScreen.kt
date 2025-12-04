@@ -95,7 +95,7 @@ fun SettingsScreen(
 
                 Spacer(Modifier.height(12.dp))
 
-                Text("CineTrack v0.4.7beta")
+                Text("CineTrack v0.6.7beta")
                 Text(
                     "Sevgiyle <3", style = MaterialTheme.typography.bodySmall
                 )

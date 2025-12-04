@@ -51,7 +51,7 @@ fun WatchlistScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(movies) { movie ->
-                    MoviePosterCard(
+                    GridMoviePosterCard(
                         movie = movie, onClick = { onMovieClick(movie.id) })
                 }
             }

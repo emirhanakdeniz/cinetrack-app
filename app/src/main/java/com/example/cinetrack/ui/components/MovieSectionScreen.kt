@@ -18,8 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.cinetrack.GridMoviePosterCard
 import com.example.cinetrack.Movie
-import com.example.cinetrack.MoviePosterCard
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +59,7 @@ fun MovieSectionScreen(
             ) {
                 items(movies.size) { index ->
                     val movie = movies[index]
-                    MoviePosterCard(
+                    GridMoviePosterCard(
                         movie = movie, onClick = { onMovieClick(movie.id) })
                 }
             }
