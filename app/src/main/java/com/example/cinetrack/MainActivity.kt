@@ -12,10 +12,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.CheckCircle
@@ -42,6 +42,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.cinetrack.ui.components.HorizontalMovieRow
+import com.example.cinetrack.ui.components.SectionTitle
+import com.example.cinetrack.ui.home.RecommendationPlaceholder
 import com.example.cinetrack.ui.settings.SettingsScreen
 import com.example.cinetrack.ui.settings.ThemeViewModel
 import com.example.cinetrack.ui.theme.CineGold
@@ -247,18 +250,52 @@ fun MovieListScreen(
                 }
 
                 else -> {
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
+                    LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                            .padding(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(uiState.movies.size) { index ->
-                            val movie = uiState.movies[index]
-                            MoviePosterCard(
-                                movie = movie, onClick = { onMovieClick(movie.id) })
+                        // FOR YOU PAGE
+                        item {
+                            SectionTitle(title = "Senin İçin Önerilenler")
+                            Spacer(modifier = Modifier.height(8.dp))
+                            RecommendationPlaceholder(
+                                hasFavorites = uiState.favoriteMovies.isNotEmpty()
+                            )
+                        }
+
+                        // POPULAR MOVEIS
+                        if (uiState.movies.isNotEmpty()) {
+                            item {
+                                SectionTitle(title = "Popüler Filmler")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                HorizontalMovieRow(
+                                    movies = uiState.movies, onMovieClick = onMovieClick
+                                )
+                            }
+                        }
+
+                        // WATCH LIST
+                        if (uiState.watchlistMovies.isNotEmpty()) {
+                            item {
+                                SectionTitle(title = "İzleme listen")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                HorizontalMovieRow(
+                                    movies = uiState.watchlistMovies, onMovieClick = onMovieClick
+                                )
+                            }
+                        }
+
+                        // WATCHED LIST
+                        if (uiState.watchedMovies.isNotEmpty()) {
+                            item {
+                                SectionTitle(title = "İzlediklerin")
+                                Spacer(modifier = Modifier.height(8.dp))
+                                HorizontalMovieRow(
+                                    movies = uiState.watchedMovies, onMovieClick = onMovieClick
+                                )
+                            }
                         }
                     }
                 }
