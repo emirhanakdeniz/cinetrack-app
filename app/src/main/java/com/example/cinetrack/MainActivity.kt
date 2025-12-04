@@ -142,6 +142,7 @@ fun CineTrackApp(
                 ?: uiState.watchlistMovies.find { it.id == movieId }
                 ?: uiState.watchedMovies.find { it.id == movieId }
                 ?: movieListViewModel.searchUiState.results.find { it.id == movieId }
+                ?: uiState.recommendedMovies.find { it.id == movieId }
 
             movie?.let {
                 val isFavorite = uiState.favoriteIDs.contains(it.id)
