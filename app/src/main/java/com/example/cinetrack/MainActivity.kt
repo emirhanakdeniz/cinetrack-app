@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -187,20 +185,20 @@ fun MovieListScreen(
                         contentDescription = "Ara",
                     )
                 }
-                IconButton(onClick = onNavigateToWatchlist) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
-                        contentDescription = "İzlemek istediklerim",
-                        tint = CineGold
-                    )
-                }
-                IconButton(onClick = onNavigateToWatched) {
-                    Icon(
-                        imageVector = Icons.Filled.CheckCircle,
-                        contentDescription = "İzlediklerim",
-                        tint = CineGold
-                    )
-                }
+//                IconButton(onClick = onNavigateToWatchlist) {
+//                    Icon(
+//                        imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+//                        contentDescription = "İzlemek istediklerim",
+//                        tint = CineGold
+//                    )
+//                }
+//                IconButton(onClick = onNavigateToWatched) {
+//                    Icon(
+//                        imageVector = Icons.Filled.CheckCircle,
+//                        contentDescription = "İzlediklerim",
+//                        tint = CineGold
+//                    )
+//                }
                 IconButton(onClick = onNavigateToFavorites) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
@@ -260,16 +258,13 @@ fun MovieListScreen(
                         item {
                             SectionTitle(title = "Senin İçin Önerilenler")
                             Spacer(modifier = Modifier.height(8.dp))
-                            if (uiState.recommendedMovies.isNotEmpty()){
+                            if (uiState.recommendedMovies.isNotEmpty()) {
                                 HorizontalMovieRow(
-                                    movies = uiState.recommendedMovies,
-                                    onMovieClick = onMovieClick
+                                    movies = uiState.recommendedMovies, onMovieClick = onMovieClick
                                 )
                             } else {
                                 RecommendationPlaceholder(
-                                    hasFavorites = uiState.favoriteMovies.isNotEmpty()
-                                            || uiState.watchedMovies.isNotEmpty()
-                                            || uiState.watchlistMovies.isNotEmpty()
+                                    hasFavorites = uiState.favoriteMovies.isNotEmpty() || uiState.watchedMovies.isNotEmpty() || uiState.watchlistMovies.isNotEmpty()
                                 )
                             }
                         }
