@@ -43,14 +43,11 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
             try {
                 val movies = repository.getPopularMovies()
                 uiState = uiState.copy(
-                    isLoading = false,
-                    movies = movies,
-                    errorMessage = null
+                    isLoading = false, movies = movies, errorMessage = null
                 )
             } catch (e: Exception) {
                 uiState = uiState.copy(
-                    isLoading = false,
-                    errorMessage = e.localizedMessage ?: "Bir hata oluştu."
+                    isLoading = false, errorMessage = e.localizedMessage ?: "Bir hata oluştu."
                 )
             }
         }
@@ -66,8 +63,9 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
                 favoriteIDs = favorites.map { it.id }.toSet(),
                 favoriteMovies = favorites.map { it.toMovie() },
                 watchlistMovies = watchlist.map { it.toMovie() },
-                watchedMovies = watched.map { it.toMovie() }
-            )
+                watchedMovies = watched.map { it.toMovie() })
+
+            loadRecommendations()
         }
     }
 
@@ -76,8 +74,8 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
             val existing = trackedMovieDao.getById(movie.id)
             val currentlyFavorite = existing?.isFavorite == true
 
-            val updated = (existing ?: movie.toTrackedEntity())
-                .copy(isFavorite = !currentlyFavorite)
+            val updated =
+                (existing ?: movie.toTrackedEntity()).copy(isFavorite = !currentlyFavorite)
 
             trackedMovieDao.upsert(updated)
             loadTrackedMovies()
@@ -91,9 +89,7 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
 
         if (newQuery.isBlank()) {
             searchUiState = searchUiState.copy(
-                isLoading = false,
-                results = emptyList(),
-                errorMessage = null
+                isLoading = false, results = emptyList(), errorMessage = null
             )
             return
         }
@@ -115,24 +111,19 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         val query = rawQuery.trim()
         if (query.isBlank()) {
             searchUiState = searchUiState.copy(
-                isLoading = false,
-                results = emptyList(),
-                errorMessage = null
+                isLoading = false, results = emptyList(), errorMessage = null
             )
             return
         }
 
         searchUiState = searchUiState.copy(
-            isLoading = true,
-            errorMessage = null
+            isLoading = true, errorMessage = null
         )
 
         try {
             val movies = repository.searchMovies(query)
             searchUiState = searchUiState.copy(
-                isLoading = false,
-                results = movies,
-                errorMessage = null
+                isLoading = false, results = movies, errorMessage = null
             )
         } catch (e: Exception) {
             searchUiState = searchUiState.copy(
@@ -153,8 +144,7 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
                 status
             }
 
-            val updated = (existing ?: movie.toTrackedEntity())
-                .copy(status = newStatus)
+            val updated = (existing ?: movie.toTrackedEntity()).copy(status = newStatus)
 
             trackedMovieDao.upsert(updated)
             loadTrackedMovies()
@@ -163,5 +153,65 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun clearMovieStatus(movie: Movie) {
         setMovieStatus(movie, MovieStatus.NONE)
+    }
+
+    private fun getFranchiseKey(title: String): String {
+        return title.substringBefore(":").substringBefore("-").trim().lowercase()
+    }
+
+    private fun getRecommendationSeedIds(): List<Int> {
+        val pool = buildList {
+            addAll(uiState.favoriteMovies)
+            addAll(uiState.watchlistMovies)
+            addAll(uiState.watchedMovies)
+        }.distinctBy { it.id }
+
+        if (pool.isEmpty()) return emptyList()
+
+        val shuffled = pool.shuffled()
+
+        val usedFranchises = mutableSetOf<String>()
+        val result = mutableListOf<Int>()
+
+        for (movie in shuffled) {
+            if (result.size >= 4) break
+
+            val key = getFranchiseKey(movie.title)
+
+            if (key.isNotBlank() && key in usedFranchises) {
+                continue
+            }
+
+            usedFranchises += key
+            result += movie.id
+        }
+
+        return result
+    }
+
+    private fun loadRecommendations() {
+        viewModelScope.launch {
+            val seedIds = getRecommendationSeedIds()
+
+            if (seedIds.isEmpty()) {
+                uiState = uiState.copy(recommendedMovies = emptyList())
+                return@launch
+            }
+
+
+            try {
+                val allRecommended = repository.getRecommendationsForMovies(seedIds)
+
+                val ownedIds = uiState.favoriteMovies.map { it.id }
+                    .toSet() + uiState.watchlistMovies.map { it.id }
+                    .toSet() + uiState.watchedMovies.map { it.id }.toSet()
+
+                val filtered = allRecommended.filter { it.id !in ownedIds }
+
+                uiState = uiState.copy(recommendedMovies = filtered)
+            } catch (e: Exception) {
+                uiState = uiState.copy(recommendedMovies = emptyList())
+            }
+        }
     }
 }

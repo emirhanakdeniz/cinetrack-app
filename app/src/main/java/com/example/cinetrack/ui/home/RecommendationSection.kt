@@ -11,21 +11,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun RecommendationPlaceholder(
-    hasFavorites: Boolean
-) {
+fun RecommendationPlaceholder(hasFavorites: Boolean) {
+    val text = if (!hasFavorites) {
+        "Sana özel film önerileri için favorilerine veya izleme listene birkaç film ekleyebilirsin."
+    } else {
+        "Favorilerine ve listene göre öneriler hazırlanıyor. Bir süre sonra bu alanda görünecek."
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        val text = if (hasFavorites) {
-            "Favorilerine ve listene göre sana özel film önerileri yakında burada görünecek."
-        } else {
-            "Sana özel film önerileri için önce birkaç favori eklemeyi deneyebilirsin."
-        }
-
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium,
@@ -33,3 +31,4 @@ fun RecommendationPlaceholder(
         )
     }
 }
+

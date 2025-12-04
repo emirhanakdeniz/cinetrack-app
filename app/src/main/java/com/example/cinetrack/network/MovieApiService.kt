@@ -2,6 +2,7 @@ package com.example.cinetrack.network
 
 import com.example.cinetrack.network.model.MovieListResponse
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MovieApiService {
@@ -19,5 +20,13 @@ interface MovieApiService {
         @Query("language") language: String = "tr-TR",
         @Query("page") page: Int = 1,
         @Query("include_adult") includeAdult: Boolean = false
+    ): MovieListResponse
+
+    @GET("movie/{movie_id}/recommendations")
+    suspend fun getRecommendations(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String = "tr-TR",
+        @Query("page") page: Int = 1
     ): MovieListResponse
 }

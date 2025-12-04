@@ -260,9 +260,18 @@ fun MovieListScreen(
                         item {
                             SectionTitle(title = "Senin İçin Önerilenler")
                             Spacer(modifier = Modifier.height(8.dp))
-                            RecommendationPlaceholder(
-                                hasFavorites = uiState.favoriteMovies.isNotEmpty()
-                            )
+                            if (uiState.recommendedMovies.isNotEmpty()){
+                                HorizontalMovieRow(
+                                    movies = uiState.recommendedMovies,
+                                    onMovieClick = onMovieClick
+                                )
+                            } else {
+                                RecommendationPlaceholder(
+                                    hasFavorites = uiState.favoriteMovies.isNotEmpty()
+                                            || uiState.watchedMovies.isNotEmpty()
+                                            || uiState.watchlistMovies.isNotEmpty()
+                                )
+                            }
                         }
 
                         // POPULAR MOVEIS
