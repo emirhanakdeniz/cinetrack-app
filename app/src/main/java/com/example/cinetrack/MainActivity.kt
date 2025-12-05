@@ -203,7 +203,7 @@ fun MovieListScreen(
     onSeeAllRecommended: () -> Unit,
     onSeeAllPopular: () -> Unit,
     onSeeAllWatchlist: () -> Unit,
-    onSeeAllWatched: () -> Unit
+    onSeeAllWatched: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -214,20 +214,6 @@ fun MovieListScreen(
                         contentDescription = "Ara",
                     )
                 }
-//                IconButton(onClick = onNavigateToWatchlist) {
-//                    Icon(
-//                        imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
-//                        contentDescription = "İzlemek istediklerim",
-//                        tint = CineGold
-//                    )
-//                }
-//                IconButton(onClick = onNavigateToWatched) {
-//                    Icon(
-//                        imageVector = Icons.Filled.CheckCircle,
-//                        contentDescription = "İzlediklerim",
-//                        tint = CineGold
-//                    )
-//                }
                 IconButton(onClick = onNavigateToFavorites) {
                     Icon(
                         imageVector = Icons.Filled.Favorite,
@@ -368,86 +354,3 @@ fun CineTrackAppBarTitle() {
         Text(text = "CineTrack")
     }
 }
-
-
-//@Composable
-//fun MovieCard(
-//    movie: Movie,
-//    onClick: () -> Unit
-//) {
-//    Card(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .clickable { onClick() },
-//        shape = RoundedCornerShape(12.dp),
-//        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-//    ) {
-//        Row(
-//            modifier = Modifier.padding(12.dp)
-//        ) {
-//            AsyncImage(
-//                model = movie.posterUrl,
-//                contentDescription = movie.title,
-//                modifier = Modifier
-//                    .size(width = 90.dp, height = 130.dp)
-//                    .clip(RoundedCornerShape(10.dp)),
-//                contentScale = ContentScale.Crop
-//            )
-//
-//            Spacer(modifier = Modifier.padding(start = 12.dp))
-//
-//            Column(
-//                modifier = Modifier
-//                    .weight(1f)
-//            ) {
-//                Text(
-//                    text = movie.title,
-//                    style = MaterialTheme.typography.titleMedium
-//                )
-//
-//                Spacer(modifier = Modifier.padding(top = 4.dp))
-//
-//                Text(
-//                    text = "${movie.year}",
-//                    style = MaterialTheme.typography.bodyMedium
-//                )
-//
-//                Spacer(modifier = Modifier.padding(top = 4.dp))
-//
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Filled.Star,
-//                        contentDescription = "IMDb Rating",
-//                        modifier = Modifier.size(18.dp)
-//                    )
-//                    Spacer(modifier = Modifier.padding(start = 4.dp))
-//                    Text(
-//                        text = "${movie.rating}",
-//                        style = MaterialTheme.typography.bodyMedium
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
-
-//@Preview(showBackground = true)
-//@Composable
-//fun MovieListPreview() {
-//    val fakeState = MovieListUiState(
-//        isLoading = false,
-//        movies = sampleMovies
-//    )
-//
-//    MovieListScreen(
-//        uiState = fakeState,
-//        onMovieClick = {},
-//        onRetryClick = {},
-//        onNavigateToFavorites = {},
-//        onNavigateToSearch = {},
-//        onNavigateToWatchlist = {},
-//        onNavigateToWatched = {}
-//    )
-//}
