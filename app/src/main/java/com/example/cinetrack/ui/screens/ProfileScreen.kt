@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Tv
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,6 +31,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.cinetrack.Movie
 import com.example.cinetrack.MovieListUiState
@@ -126,17 +129,20 @@ fun ProfileScreen(
                         StatCard(
                             title = "İzlediklerin",
                             value = watchedCount.toString(),
-                            icon = Icons.Filled.Tv
+                            icon = Icons.Filled.Tv,
+                            modifier = Modifier.weight(1f)
                         )
                         StatCard(
                             title = "İzleme Listen",
-                                                        value = watchlistCount.toString(),
-                            icon = Icons.AutoMirrored.Filled.PlaylistAdd
+                            value = watchlistCount.toString(),
+                            icon = Icons.AutoMirrored.Filled.PlaylistAdd,
+                            modifier = Modifier.weight(1f)
                         )
                         StatCard(
                             title = "Favorilerin",
                             value = favoriteCount.toString(),
-                            icon = Icons.Filled.Favorite
+                            icon = Icons.Filled.Favorite,
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }
@@ -147,35 +153,38 @@ fun ProfileScreen(
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = Modifier.padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
                                 text = "İzleme İstatistiklerin",
-                                style = MaterialTheme.typography.titleMedium
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
                             )
 
                             if (averageRating != null) {
-                                Text(
-                                    text = "İzlediklerinin ortalama puanı: ${
-                                        "%.1f".format(
-                                            averageRating
-                                        )
-                                    }",
-                                    style = MaterialTheme.typography.bodyMedium
+                                StatisticItem(
+                                    icon = "⭐",
+                                    label = "Ortalama Puan",
+                                    value = "%.1f".format(averageRating)
                                 )
                             }
 
                             if (mostActiveYear != null) {
-                                Text(
-                                    text = "En çok film izlediğin yıl: $mostActiveYear\nSen bu yılların insanısın!",
-                                    style = MaterialTheme.typography.bodyMedium
+                                StatisticItem(
+                                    icon = "🎬",
+                                    label = "En Aktif Yıl",
+                                    value = mostActiveYear.toString(),
+                                    subtitle = "Sen bu yılların insanısın!"
                                 )
                             }
 
-                            Text(
-                                text = "Toplam izlediğin film sayısı: $watchedCount\nDevam et sayısız film seni bekliyor.",
-                                style = MaterialTheme.typography.bodyMedium
+                            StatisticItem(
+                                icon = "📺",
+                                label = "Toplam Film",
+                                value = watchedCount.toString(),
+                                subtitle = "Devam et, sayısız film seni bekliyor!"
                             )
                         }
                     }
@@ -184,12 +193,14 @@ fun ProfileScreen(
                 if (topRated.isNotEmpty()) {
                     item {
                         Text(
-                            text = "En yüksek puana sahip izlediklerin",
-                            style = MaterialTheme.typography.titleMedium
+                            text = "En Yüksek Puana Sahip Filmler",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(vertical = 8.dp)
                         )
                     }
                     items(topRated) { movie ->
-                        TopRatedMovieRow(movie = movie)
+                        TopRatedMovieCard(movie = movie)
                     }
                 }
             }
@@ -201,54 +212,127 @@ fun ProfileScreen(
 private fun StatCard(
     title: String,
     value: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = modifier,
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
             modifier = Modifier
-                .padding(12.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(32.dp),
+                tint = MaterialTheme.colorScheme.primary
             )
             Text(
                 text = value,
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
             )
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center
             )
         }
     }
 }
 
 @Composable
-private fun TopRatedMovieRow(movie: Movie) {
+private fun StatisticItem(
+    icon: String,
+    label: String,
+    value: String,
+    subtitle: String? = null
+) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        Text(
+            text = icon,
+            style = MaterialTheme.typography.headlineMedium
+        )
         Column(
             modifier = Modifier.weight(1f)
         ) {
             Text(
-                text = movie.title,
-                style = MaterialTheme.typography.bodyMedium
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
-                text = "${movie.year} • ⭐ ${"%.1f".format(movie.rating)}",
-                style = MaterialTheme.typography.bodySmall
+                text = value,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
             )
+            if (subtitle != null) {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TopRatedMovieCard(movie: Movie) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = movie.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = movie.year.toString(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = "Puan",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    text = "%.1f".format(movie.rating),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }
