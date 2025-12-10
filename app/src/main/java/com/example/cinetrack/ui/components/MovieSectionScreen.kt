@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -36,7 +37,11 @@ import com.example.cinetrack.MovieSortOption
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieSectionScreen(
-    title: String, movies: List<Movie>, onMovieClick: (Int) -> Unit, onBackClick: () -> Unit
+    title: String,
+    movies: List<Movie>,
+    onMovieClick: (Int) -> Unit,
+    onBackClick: () -> Unit,
+    onRefreshClick: (() -> Unit)? = null
 ) {
     var sortOption by remember { mutableStateOf(MovieSortOption.DEFAULT) }
 
@@ -58,15 +63,29 @@ fun MovieSectionScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(title) }, navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Geri"
-                    )
+            TopAppBar(
+                title = { Text(title) },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Geri"
+                        )
+                    }
+                },
+                actions = {
+                    if (onRefreshClick != null) {
+                        IconButton(onClick = onRefreshClick) {
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = "Önerileri yenile"
+                            )
+                        }
+                    }
                 }
-            })
-        }) { innerPadding ->
+            )
+        }
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

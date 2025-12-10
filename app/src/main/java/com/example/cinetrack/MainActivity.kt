@@ -99,8 +99,7 @@ fun CineTrackApp(
                 onSeeAllRecommended = { navController.navigate("recommended_full") },
                 onSeeAllPopular = { navController.navigate("popular_full") },
                 onSeeAllWatchlist = { navController.navigate("watchlist") },
-                onSeeAllWatched = { navController.navigate("watched") },
-                onRefreshRecommendations = { movieListViewModel.refreshRecommendations() }
+                onSeeAllWatched = { navController.navigate("watched") }
             )
         }
 
@@ -159,7 +158,9 @@ fun CineTrackApp(
                 onMovieClick = { movieId ->
                     navController.navigate("movie_detail/$movieId")
                 },
-                onBackClick = { navController.popBackStack() })
+                onBackClick = { navController.popBackStack() },
+                onRefreshClick = { movieListViewModel.refreshRecommendations() }
+            )
         }
 
 
@@ -205,8 +206,7 @@ fun MovieListScreen(
     onSeeAllRecommended: () -> Unit,
     onSeeAllPopular: () -> Unit,
     onSeeAllWatchlist: () -> Unit,
-    onSeeAllWatched: () -> Unit,
-    onRefreshRecommendations: () -> Unit
+    onSeeAllWatched: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -276,8 +276,7 @@ fun MovieListScreen(
                         item {
                             SectionTitle(
                                 title = "Senin İçin Önerilenler",
-                                onSeeAllClick = if (uiState.recommendedMovies.isNotEmpty()) onSeeAllRecommended else null,
-                                onRefreshClick = onRefreshRecommendations
+                                onSeeAllClick = if (uiState.recommendedMovies.isNotEmpty()) onSeeAllRecommended else null
                             )
                             Spacer(modifier = Modifier.height(8.dp))
 
