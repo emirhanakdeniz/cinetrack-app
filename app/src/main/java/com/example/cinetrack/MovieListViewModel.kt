@@ -159,6 +159,38 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         return title.substringBefore(":").substringBefore("-").trim().lowercase()
     }
 
+    fun refreshRecommendations() {
+        loadRecommendations(randomizeSeed = true)
+    }
+
+    private fun loadRecommendations(randomizeSeed: Boolean) {
+        viewModelScope.launch {
+            val seedIds = getRecommendationSeedIds(randomizeSeed)
+
+            if (seedIds.isEmpty()) {
+                uiState = uiState.copy(recommendedMovies = emptyList())
+                return@launch
+            }
+
+
+            try {
+                val allRecommended = repository.getRecommendationsForMovies(seedIds)
+
+                val ownedIds = (
+                        uiState.favoriteMovies +
+                                uiState.watchlistMovies +
+                                uiState.watchedMovies
+                        ).map { it.id }.toSet()
+
+                val filtered = allRecommended.filter { it.id !in ownedIds }
+
+                uiState = uiState.copy(recommendedMovies = filtered)
+            } catch (e: Exception) {
+                uiState = uiState.copy(recommendedMovies = emptyList())
+            }
+        }
+    }
+
     private fun getRecommendationSeedIds(randomize: Boolean): List<Int> {
         val pool = buildList {
             addAll(uiState.favoriteMovies)
@@ -189,33 +221,4 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         return result
     }
 
-    private fun loadRecommendations(randomizeSeed: Boolean) {
-        viewModelScope.launch {
-            val seedIds = getRecommendationSeedIds(randomizeSeed)
-
-            if (seedIds.isEmpty()) {
-                uiState = uiState.copy(recommendedMovies = emptyList())
-                return@launch
-            }
-
-
-            try {
-                val allRecommended = repository.getRecommendationsForMovies(seedIds)
-
-                val ownedIds = uiState.favoriteMovies.map { it.id }
-                    .toSet() + uiState.watchlistMovies.map { it.id }
-                    .toSet() + uiState.watchedMovies.map { it.id }.toSet()
-
-                val filtered = allRecommended.filter { it.id !in ownedIds }
-
-                uiState = uiState.copy(recommendedMovies = filtered)
-            } catch (e: Exception) {
-                uiState = uiState.copy(recommendedMovies = emptyList())
-            }
-        }
-    }
-
-    fun refreshRecommendations() {
-        loadRecommendations(randomizeSeed = true)
-    }
 }
