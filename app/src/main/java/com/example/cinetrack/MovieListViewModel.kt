@@ -184,6 +184,12 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
 
                 val filtered = allRecommended.filter { it.id !in ownedIds }
 
+                val finalList = if (randomizeSeed) {
+                    filtered.shuffled()
+                } else {
+                    filtered
+                }
+
                 uiState = uiState.copy(recommendedMovies = filtered)
             } catch (e: Exception) {
                 uiState = uiState.copy(recommendedMovies = emptyList())
@@ -205,7 +211,7 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         val usedFranchises = mutableSetOf<String>()
         val result = mutableListOf<Int>()
 
-        for (movie in pool) {
+        for (movie in source) {
             if (result.size >= 4) break
 
             val key = getFranchiseKey(movie.title)
