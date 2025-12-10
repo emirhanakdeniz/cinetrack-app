@@ -65,7 +65,7 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
                 watchlistMovies = watchlist.map { it.toMovie() },
                 watchedMovies = watched.map { it.toMovie() })
 
-            loadRecommendations()
+            loadRecommendations(randomizeSeed = false)
         }
     }
 
@@ -159,7 +159,7 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         return title.substringBefore(":").substringBefore("-").trim().lowercase()
     }
 
-    private fun getRecommendationSeedIds(): List<Int> {
+    private fun getRecommendationSeedIds(randomize: Boolean): List<Int> {
         val pool = buildList {
             addAll(uiState.favoriteMovies)
             addAll(uiState.watchlistMovies)
@@ -168,7 +168,7 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
 
         if (pool.isEmpty()) return emptyList()
 
-//        val shuffled = pool.shuffled()
+        val source = if (randomize) pool.shuffled() else pool
 
         val usedFranchises = mutableSetOf<String>()
         val result = mutableListOf<Int>()
@@ -189,9 +189,9 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         return result
     }
 
-    private fun loadRecommendations() {
+    private fun loadRecommendations(randomizeSeed: Boolean) {
         viewModelScope.launch {
-            val seedIds = getRecommendationSeedIds()
+            val seedIds = getRecommendationSeedIds(randomizeSeed)
 
             if (seedIds.isEmpty()) {
                 uiState = uiState.copy(recommendedMovies = emptyList())
@@ -213,5 +213,9 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
                 uiState = uiState.copy(recommendedMovies = emptyList())
             }
         }
+    }
+
+    fun refreshRecommendations() {
+        loadRecommendations(randomizeSeed = true)
     }
 }
