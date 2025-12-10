@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -45,6 +46,7 @@ import com.example.cinetrack.ui.components.HorizontalMovieRow
 import com.example.cinetrack.ui.components.MovieSectionScreen
 import com.example.cinetrack.ui.components.SectionTitle
 import com.example.cinetrack.ui.home.RecommendationPlaceholder
+import com.example.cinetrack.ui.screens.ProfileScreen
 import com.example.cinetrack.ui.settings.SettingsScreen
 import com.example.cinetrack.ui.settings.ThemeViewModel
 import com.example.cinetrack.ui.theme.CineGold
@@ -96,6 +98,7 @@ fun CineTrackApp(
                 onNavigateToFavorites = { navController.navigate("favorites") },
                 onNavigateToSearch = { navController.navigate("search") },
                 onNavigateToSettings = { navController.navigate("settings") },
+                onNavigateToProfile = { navController.navigate("profile")},
                 onSeeAllRecommended = { navController.navigate("recommended_full") },
                 onSeeAllPopular = { navController.navigate("popular_full") },
                 onSeeAllWatchlist = { navController.navigate("watchlist") },
@@ -103,6 +106,12 @@ fun CineTrackApp(
             )
         }
 
+        composable("profile") {
+            ProfileScreen(
+                uiState = uiState,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
 
         composable("favorites") {
             FavoritesScreen(favoriteMovies = uiState.favoriteMovies, onMovieClick = { movieId ->
@@ -203,6 +212,7 @@ fun MovieListScreen(
     onNavigateToFavorites: () -> Unit,
     onNavigateToSearch: () -> Unit,
     onNavigateToSettings: () -> Unit,
+    onNavigateToProfile: () -> Unit,
     onSeeAllRecommended: () -> Unit,
     onSeeAllPopular: () -> Unit,
     onSeeAllWatchlist: () -> Unit,
@@ -210,27 +220,35 @@ fun MovieListScreen(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(title = { CineTrackAppBarTitle() }, actions = {
-                IconButton(onClick = onNavigateToSearch) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Ara",
-                    )
-                }
-                IconButton(onClick = onNavigateToFavorites) {
-                    Icon(
-                        imageVector = Icons.Filled.Favorite,
-                        contentDescription = "Favoriler",
-                        tint = CineGold
+            TopAppBar(
+                title = { CineTrackAppBarTitle() },
+                actions = {
+                    IconButton(onClick = onNavigateToSearch) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Ara",
+                        )
+                    }
+                    IconButton(onClick = onNavigateToFavorites) {
+                        Icon(
+                            imageVector = Icons.Filled.Favorite,
+                            contentDescription = "Favoriler",
+                            tint = CineGold
 
-                    )
-                }
-                IconButton(onClick = onNavigateToSettings) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings, contentDescription = "Ayarlar"
-                    )
-                }
-            })
+                        )
+                    }
+                    IconButton(onClick = onNavigateToProfile) {
+                        Icon(
+                            imageVector = Icons.Filled.Person,
+                            contentDescription = "Profil & İstatistikler"
+                        )
+                    }
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings, contentDescription = "Ayarlar"
+                        )
+                    }
+                })
         }) { innerPadding ->
         Box(
             modifier = Modifier
