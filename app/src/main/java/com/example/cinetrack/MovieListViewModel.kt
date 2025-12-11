@@ -14,6 +14,7 @@ import com.example.cinetrack.repository.MovieRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
 
 
 class MovieListViewModel(application: Application) : AndroidViewModel(application) {
@@ -25,6 +26,9 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
     private val trackedMovieDao: TrackedMovieDao =
         AppDatabase.getInstance(getApplication()).trackedMovieDao()
 
+    private val sharedPreferences =
+        application.getSharedPreferences("cinetrack_prefs", android.content.Context.MODE_PRIVATE)
+
     var uiState by mutableStateOf(MovieListUiState())
         private set
 
@@ -32,8 +36,19 @@ class MovieListViewModel(application: Application) : AndroidViewModel(applicatio
         private set
 
     init {
+        loadUserName()
         loadPopularMovies()
         loadTrackedMovies()
+    }
+
+    private fun loadUserName() {
+        val savedName = sharedPreferences.getString("user_name", "Sinema Sever") ?: "Sinema Sever"
+        uiState = uiState.copy(userName = savedName)
+    }
+
+    fun updateUserName(newName: String) {
+        sharedPreferences.edit { putString("user_name", newName) }
+        uiState = uiState.copy(userName = newName)
     }
 
     fun loadPopularMovies() {

@@ -8,5 +8,6 @@ data class MovieListUiState(
     val favoriteMovies: List<Movie> = emptyList(),
     val watchlistMovies: List<Movie> = emptyList(),
     val watchedMovies: List<Movie> = emptyList(),
-    val recommendedMovies: List<Movie> = emptyList()
+    val recommendedMovies: List<Movie> = emptyList(),
+    val userName: String = "Sinema Sever"
 )

@@ -98,7 +98,7 @@ fun CineTrackApp(
                 onNavigateToFavorites = { navController.navigate("favorites") },
                 onNavigateToSearch = { navController.navigate("search") },
                 onNavigateToSettings = { navController.navigate("settings") },
-                onNavigateToProfile = { navController.navigate("profile")},
+                onNavigateToProfile = { navController.navigate("profile") },
                 onSeeAllRecommended = { navController.navigate("recommended_full") },
                 onSeeAllPopular = { navController.navigate("popular_full") },
                 onSeeAllWatchlist = { navController.navigate("watchlist") },
@@ -109,7 +109,8 @@ fun CineTrackApp(
         composable("profile") {
             ProfileScreen(
                 uiState = uiState,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onUpdateUserName = { newName -> movieListViewModel.updateUserName(newName) }
             )
         }
 
