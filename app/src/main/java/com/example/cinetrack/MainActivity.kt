@@ -368,7 +368,7 @@ fun MovieListScreen(
 fun CineTrackAppBarTitle() {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
-            painter = painterResource(id = R.drawable.ic_cinetrack_logo),
+            painter = painterResource(id = R.drawable.cinetrack_logo_splash),
             contentDescription = "CineTrack logo",
             modifier = Modifier.width(28.dp)
         )

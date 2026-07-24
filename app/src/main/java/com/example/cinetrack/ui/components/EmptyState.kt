@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,14 +31,11 @@ fun EmptyState(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_cinetrack_logo),
+            painter = painterResource(id = R.drawable.cinetrack_logo_splash),
             contentDescription = null,
             modifier = Modifier
                 .size(120.dp)
-                .padding(16.dp),
-            colorFilter = ColorFilter.tint(
-                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.35f)
-            )
+                .padding(16.dp)
         )
         Text(
             text = title,
